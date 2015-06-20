@@ -1,4 +1,5 @@
 Exams = new Mongo.Collection('exams')
+Subjects = new Mongo.Collection('subjects')
 
 if (Meteor.isServer) {
   T.prepare(function() {
@@ -10,8 +11,16 @@ if (Meteor.isServer) {
         Exams.insert({ score: 9 })
       })
 
+      beforeEach(function() {
+        Subjects.insert({ name: 'name' })
+      })
+
       it('should have 1 exams', function() {
         Exams.find().count().should.eq(1)
+      })
+
+      it('should have 2 subjects', function() {
+        Subjects.find().count().should.eq(2)
       })
 
       afterAll(function() {

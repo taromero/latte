@@ -60,7 +60,6 @@ it('should...', function() {...}, { runOnly: true })
 
 #### TODOS
 
-- Add `before` and `after` blocks.
 - Add timeout failures.
 - Add spec.
 - Generate Meteor package.
