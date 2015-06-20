@@ -40,12 +40,12 @@ The aim of this project is to provide a minimal library to just run specs mocha-
 3. The spec should be contained inside a `T.prepare` call.
 4. Inside any `Meteor.startup` call, run: `T.run`.
 5. On the command line, run: `METEOR_ENV=test meteor --test`
-> Use `METEOR_ENV=test CONTINUOUS_TESTING=true meteor` run tests automatically when files change (while working on testing).
+
+> Use `METEOR_ENV=test CONTINUOUS_TESTING=true meteor` to run tests automatically when files change (while working on testing).
 
 #### TODOS
 
 - Add `before` and `after` blocks.
-- Remove the need for `Meteor.startup` wrap on every spec file.
 - Add timeout failures.
 - Add spec.
 - Generate Meteor package.
