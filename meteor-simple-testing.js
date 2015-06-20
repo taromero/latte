@@ -14,6 +14,18 @@ if (Meteor.isServer) {
         Exams.find().count().should.eq(1)
       })
 
+      afterAll(function() {
+        Exams.insert({ score: 8 })
+      })
+
+      context('inserting a new record in an afterAll block', function() {
+
+        it('should have 2 exams', function() {
+          Exams.find().count().should.eq(2)
+        })
+
+      })
+
     })
 
     describe('simple math example', function() {
@@ -43,6 +55,7 @@ if (Meteor.isServer) {
           it('should be 4', function() {
             number.should.equal(4)
           })
+
         })
 
       })
