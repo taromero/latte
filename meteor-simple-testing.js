@@ -6,7 +6,9 @@ if (Meteor.isServer) {
 
     describe('model example', function() {
 
-      Exams.insert({ score: 9 })
+      beforeAll(function() {
+        Exams.insert({ score: 9 })
+      })
 
       it('should have 1 exams', function() {
         Exams.find().count().should.eq(1)
@@ -18,7 +20,11 @@ if (Meteor.isServer) {
 
       context('1 + 1', function() {
 
-        number = 1 + 1
+        var number
+
+        beforeAll(function() {
+          number = 1 + 1
+        })
 
         it('should be 3 (expected failure)', function() {
           number.should.equal(3)
@@ -30,7 +36,9 @@ if (Meteor.isServer) {
 
         context('multiplied by 2', function() {
 
-          number = number * 2
+          beforeAll(function() {
+            number = number * 2
+          })
 
           it('should be 4', function() {
             number.should.equal(4)
