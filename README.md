@@ -17,7 +17,7 @@ The aim of this project is to provide a minimal library to just run specs mocha-
 #### Workflow
 
 1. Write your specs.
-2. Run `METEOR_ENV=test meteor --test`.
+2. Run `METEOR_ENV=test meteor --once`.
 3. Watch test report.
 4. Watch the run finish returning the exit code (useful for CI).
 
@@ -39,9 +39,24 @@ The aim of this project is to provide a minimal library to just run specs mocha-
 2. Write a spec anywhere in a server directory.
 3. The spec should be contained inside a `T.prepare` call.
 4. Inside any `Meteor.startup` call, run: `T.run`.
-5. On the command line, run: `METEOR_ENV=test meteor --test`
+5. On the command line, run: `METEOR_ENV=test meteor --once`
 
-> Use `METEOR_ENV=test CONTINUOUS_TESTING=true meteor` to run tests automatically when files change (while working on testing).
+##### Run tests on code change
+
+Use `METEOR_ENV=test CONTINUOUS_TESTING=true meteor` to run tests automatically when files change (while working on testing). `CONTINUOUS_TESTING` tells Latte not to end the Meteor process.
+
+##### Run selected tests
+
+2 selection options:
+
+- Per `it`. Start meteor with `ONLY_IT=true`
+- Per suite (`T.prepare` block). Start meteor with `ONLY_SUITE=true`
+
+Mark either the `it` or `prepare` block setting { runOnly: true } as the last parameter. Example:
+
+```
+it('should...', function() {...}, { runOnly: true })
+```
 
 #### TODOS
 
