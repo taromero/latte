@@ -1,3 +1,5 @@
+Exams = new Mongo.Collection('exams')
+
 if (Meteor.isServer) {
   Meteor.startup(function () {
 
@@ -5,11 +7,10 @@ if (Meteor.isServer) {
 
     describe('model example', function() {
 
-      Exams = new Mongo.Collection('exams')
       Exams.insert({ score: 9 })
 
-      it('should have exams', function() {
-        Exams.find().count().should.be.above(1)
+      it('should have 1 exams', function() {
+        Exams.find().count().should.eq(1)
       })
 
     })
@@ -41,7 +42,9 @@ if (Meteor.isServer) {
 
     })
 
-    T.run()
+    Meteor.setTimeout(function() {
+      T.run()
+    })
 
   })
 }
