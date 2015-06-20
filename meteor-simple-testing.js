@@ -1,8 +1,7 @@
 Exams = new Mongo.Collection('exams')
 
 if (Meteor.isServer) {
-  Meteor.startup(function () {
-
+  T.prepare(function() {
     should()
 
     describe('model example', function() {
@@ -41,10 +40,10 @@ if (Meteor.isServer) {
       })
 
     })
-
-    Meteor.setTimeout(function() {
-      T.run()
-    })
-
   })
+
+  Meteor.startup(function() {
+    T.run()
+  })
+
 }

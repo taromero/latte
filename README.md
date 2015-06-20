@@ -37,13 +37,8 @@ The aim of this project is to provide a minimal library to just run specs mocha-
 
 1. `meteor add canotto90:latte` (package still not released)
 2. Write a spec anywhere in a server directory.
-3. The spec should be contained inside a `Meteor.startup` call.
-4. Inside any `Meteor.startup` call, run:
-```
-Meteor.setTimeout(function() {
-  T.run()
-})
-```
+3. The spec should be contained inside a `T.prepare` call.
+4. Inside any `Meteor.startup` call, run: `T.run`.
 5. On the command line, run: `METEOR_ENV=test meteor --test`
 > Use `METEOR_ENV=test CONTINUOUS_TESTING=true meteor` run tests automatically when files change (while working on testing).
 
