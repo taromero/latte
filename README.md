@@ -37,11 +37,14 @@ The aim of this project is to provide a minimal library to just run specs mocha-
 
 #### How to use
 
-1. `meteor add canotto90:latte` (package still not released)
+1. `meteor add canotto90:latte`.
+2. `meteor add practicalmeteor:chai`. Latte needs an assetion library, and I've been using ChaiJS.
 2. Write a spec anywhere in a server directory.
 3. The spec should be contained inside a `T.prepare` call.
 4. Inside any `Meteor.startup` call, run: `T.run`.
 5. On the command line, run: `METEOR_ENV=test meteor --once`
+
+Sample project: https://github.com/taromero/latte-examples.
 
 ##### Run tests on code change
 
