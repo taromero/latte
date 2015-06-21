@@ -45,8 +45,7 @@ The aim of this project is to provide a minimal library to just run specs mocha-
 1. `meteor add canotto90:latte`.
 2. `meteor add practicalmeteor:chai`. Latte needs an assetion library, and I've been using ChaiJS.
 2. Write a spec anywhere in a server directory.
-3. The spec should be contained inside a `T.prepare` call.
-4. Inside any `Meteor.startup` call, run: `T.run`.
+3. The spec should be contained inside a `T.suite` call.
 5. On the command line, run: `METEOR_ENV=test meteor --once`
 
 Sample project: https://github.com/taromero/latte-examples.
@@ -60,9 +59,9 @@ Use `METEOR_ENV=test CONTINUOUS_TESTING=true meteor` to run tests automatically 
 2 selection options:
 
 - Per `it`. Start meteor with `ONLY_IT=true`
-- Per suite (`T.prepare` block). Start meteor with `ONLY_SUITE=true`
+- Per suite (`T.suite` block). Start meteor with `ONLY_SUITE=true`
 
-Mark either the `it` or `prepare` block setting { runOnly: true } as the last parameter. Example:
+Mark either the `it` or `suite` block setting { runOnly: true } as the last parameter. Example:
 
 ```
 it('should...', function() {...}, { runOnly: true })

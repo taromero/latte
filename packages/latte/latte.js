@@ -1,13 +1,15 @@
 T = {
   suites: [],
-  prepare: function(testSuite, options) {
+  suite: function(testSuite, options) {
     options = options || {}
     runOnly = (options.runOnly === undefined) ? false : options.runOnly
     if (process.env.METEOR_ENV != 'test') { return }
     if (process.env.ONLY_SUITE == 'true' && !runOnly) { return }
     T.suites.push(testSuite)
+    if (T.isFirstAddedSuite) { Meteor.startup(T.run) }
+    T.isFirstAddedSuite = false
   },
-  run: function(postRunFn) {
+  run: function() {
     if (process.env.METEOR_ENV != 'test') { return }
     var testingDB = new MongoInternals.RemoteCollectionDriver(T.testingDbUrl)
     getCollections().forEach(pointToTestingDB)
@@ -20,7 +22,7 @@ T = {
     log('')
     log((T.itCount + ' tests: ').yellow + (T.successfulItCount + ' passing, ').green + (T.itCount - T.successfulItCount + ' failing.').red)
 
-    if (postRunFn) { postRunFn() }
+    T.postRunCallback()
 
     if (process.env.CONTINUOUS_TESTING != 'true') {
       process.exit(T.exceptions.length)
@@ -79,6 +81,7 @@ T = {
     var prefix = _.range(deepLevel).reduce(function(a) { return a + '  '}, '')
     return prefix + type.magenta.bold + ' ' + label.cyan
   },
+  postRunCallback: function() {},
   describeBlocks: [],
   exceptions: [],
   deepLevel: 0,
@@ -89,6 +92,7 @@ T = {
   beforeEachBlocks: [],
   afterEachBlocks: [],
   itBlocksRunForDescribeBlock: false,
+  isFirstAddedSuite: true,
   testingDbUrl: "mongodb://127.0.0.1:3001/meteor_latte"
 }
 

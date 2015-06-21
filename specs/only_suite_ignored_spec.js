@@ -1,7 +1,7 @@
 var originalOnlySuite = process.env.ONLY_SUITE
 process.env.ONLY_SUITE = 'true'
 
-T.prepare(function() {
+T.suite(function() {
   
   describe('this should not run', function() {
 

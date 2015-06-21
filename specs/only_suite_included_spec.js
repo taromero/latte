@@ -3,9 +3,9 @@ process.env.ONLY_SUITE = 'true'
 
 suiteIncludedCounter = 0
 
-T.prepare(function() {
+T.suite(function() {
   
-  describe('running selected `prepare` blocks using ONLY_SUITE', function() {
+  describe('running selected `suite` blocks using ONLY_SUITE', function() {
 
     var a = 0
     var b = 0

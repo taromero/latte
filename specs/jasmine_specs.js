@@ -1,7 +1,7 @@
 should()
 
 // Limited set of jasmine generic specs (from http://jasmine.github.io/2.3/introduction.html)
-T.prepare(function() {
+T.suite(function() {
 
   // Introduction
 
