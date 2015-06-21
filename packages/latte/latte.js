@@ -118,7 +118,7 @@ function descriptionBlock(type) {
   }
 
   function sameLevel(obj) {
-    obj.deepLevel == T.deepLevel
+    return obj.deepLevel == T.deepLevel
   }
 }
 
