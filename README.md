@@ -63,6 +63,6 @@ it('should...', function() {...}, { runOnly: true })
 #### TODOS
 
 - Add timeout failures.
-- Add spec.
 - Generate Meteor package.
+- Add comments to the code.
 - Others.

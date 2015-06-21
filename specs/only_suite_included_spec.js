@@ -1,7 +1,7 @@
 var originalOnlySuite = process.env.ONLY_SUITE
 process.env.ONLY_SUITE = 'true'
 
-suiteIncludedCounter = 1
+suiteIncludedCounter = 0
 
 T.prepare(function() {
   
