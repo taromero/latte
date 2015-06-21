@@ -30,6 +30,8 @@ The aim of this project is to provide a minimal library to just run specs mocha-
 
 #### Gotchas
 
+- `afterAll` and `afterEach` must be declared before `it` blocks in each `describe` or `context` block.
+- Cannot run assertions inside `before` or `after` blocks.
 - Very early stage of development.
 - Initially designed to work only on server side.
 

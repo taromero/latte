@@ -47,8 +47,8 @@ if (Meteor.isServer) {
           number = 1 + 1
         })
 
-        it('should be 3 (expected failure)', function() {
-          number.should.equal(3)
+        it('should be 2', function() {
+          number.should.equal(2)
         })
 
         it('should be greater than 1', function() {
@@ -73,7 +73,12 @@ if (Meteor.isServer) {
   })
 
   Meteor.startup(function() {
-    T.run()
+    T.run(function() {
+      if (suiteIncludedCounter != 3) {
+        throw 'ignored suite tests that should not have been ignored'
+      }
+    })
+
   })
 
 }
