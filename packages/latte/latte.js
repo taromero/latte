@@ -3,14 +3,14 @@ T = {
   suite: function(testSuite, options) {
     options = options || {}
     runOnly = (options.runOnly === undefined) ? false : options.runOnly
-    if (process.env.METEOR_ENV != 'test') { return }
+    if (process.env.RUN_TESTS != 'true') { return }
     if (process.env.ONLY_SUITE == 'true' && !runOnly) { return }
     T.suites.push(testSuite)
     if (T.isFirstAddedSuite) { Meteor.startup(T.run) }
     T.isFirstAddedSuite = false
   },
   run: function() {
-    if (process.env.METEOR_ENV != 'test') { return }
+    if (process.env.RUN_TESTS != 'true') { return }
     var testingDB = new MongoInternals.RemoteCollectionDriver(T.testingDbUrl)
     getCollections().forEach(pointToTestingDB)
     getCollections().forEach(removeAll)
@@ -22,6 +22,7 @@ T = {
     log('')
     log((T.itCount + ' tests: ').yellow + (T.successfulItCount + ' passing, ').green + (T.itCount - T.successfulItCount + ' failing.').red)
 
+    getCollections().forEach(pointBackToDevelopDB)
     T.postRunCallback()
 
     if (process.env.CONTINUOUS_TESTING != 'true') {
@@ -29,8 +30,13 @@ T = {
     }
 
     function pointToTestingDB(collection) {
+      collection.latte_original_driver = collection._driver
       collection._driver = testingDB
       collection._collection = collection._driver.open(collection._name, collection._connection)
+    }
+
+    function pointBackToDevelopDB(collection) {
+      collection._collection = collection.latte_original_driver.open(collection._name, collection._connection)
     }
   },
   describe: descriptionBlock('describe'),

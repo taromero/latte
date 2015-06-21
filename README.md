@@ -22,7 +22,7 @@ The aim of this project is to provide a minimal library to just run specs mocha-
 #### Workflow
 
 1. Write your specs.
-2. Run `METEOR_ENV=test meteor --once`.
+2. Run `RUN_TESTS=true meteor --once`.
 3. Watch test report.
 4. Watch the run finish returning the exit code (useful for CI).
 
@@ -46,13 +46,19 @@ The aim of this project is to provide a minimal library to just run specs mocha-
 2. `meteor add practicalmeteor:chai`. Latte needs an assetion library, and I've been using ChaiJS.
 2. Write a spec anywhere in a server directory.
 3. The spec should be contained inside a `T.suite` call.
-5. On the command line, run: `METEOR_ENV=test meteor --once`
+5. On the command line, run: `RUN_TESTS=true meteor --once`
 
 Sample project: https://github.com/taromero/latte-examples.
 
 ##### Run tests on code change
 
-Use `METEOR_ENV=test CONTINUOUS_TESTING=true meteor` to run tests automatically when files change (while working on testing). `CONTINUOUS_TESTING` tells Latte not to end the Meteor process.
+Use `RUN_TESTS=true CONTINUOUS_TESTING=true meteor` to run tests automatically when files change. `CONTINUOUS_TESTING` tells Latte not to end the Meteor process.
+
+Latte uses testing's DB when running tests, and switches back to develop's db after running tests.
+
+##### How to debug tests
+
+As latte doesn't use mirrors, it's just like debugging regular Meteor code. Run `RUN_TESTS=true meteor debug`, and either use node inspector or node's CLI tool (by running `node debug localhost:5858` on a separate console).
 
 ##### Run selected tests
 

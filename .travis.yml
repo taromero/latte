@@ -3,4 +3,4 @@ language: node_js
 before_install:
   - curl https://install.meteor.com | /bin/sh
 script:
-  - METEOR_ENV=test meteor --once
+  - RUN_TESTS=true meteor --once
