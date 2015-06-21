@@ -1,5 +1,8 @@
 ## Latte
 
+![](https://raw.githubusercontent.com/taromero/latte/master/readme_images/latte.png)
+![](https://raw.githubusercontent.com/taromero/latte/master/readme_images/latte_failure_example.png)
+
 #### What it is
 
 Testing framework to write mocha-like specs, without the need of using Velocity.
