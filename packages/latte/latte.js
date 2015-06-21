@@ -136,11 +136,11 @@ function getCollections() {
   return collections
 }
 
-global.describe = T.describe.bind(T)
-global.context = T.context.bind(T)
-global.it = T.it.bind(T)
-global.beforeAll = T.beforeAll.bind(T)
-global.beforeEach = T.beforeEach.bind(T)
-global.afterAll = T.afterAll.bind(T)
-global.afterEach = T.afterEach.bind(T)
+describe = T.describe.bind(T)
+context = T.context.bind(T)
+it = T.it.bind(T)
+beforeAll = T.beforeAll.bind(T)
+beforeEach = T.beforeEach.bind(T)
+afterAll = T.afterAll.bind(T)
+afterEach = T.afterEach.bind(T)
 
