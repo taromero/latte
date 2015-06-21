@@ -1,5 +1,7 @@
 ## Latte
 
+[![Build Status](https://travis-ci.org/taromero/latte.svg?branch=master)](https://travis-ci.org/taromero/latte)
+
 ![](https://raw.githubusercontent.com/taromero/latte/master/readme_images/latte.png)
 ![](https://raw.githubusercontent.com/taromero/latte/master/readme_images/latte_failure_example.png)
 
