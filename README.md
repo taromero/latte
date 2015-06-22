@@ -64,14 +64,8 @@ As latte doesn't use mirrors, it's just like debugging regular Meteor code. Run 
 
 2 selection options:
 
-- Per `it`. Start meteor with `ONLY_IT=true`
-- Per suite (`T.suite` block). Start meteor with `ONLY_SUITE=true`
-
-Mark either the `it` or `suite` block setting { runOnly: true } as the last parameter. Example:
-
-```
-it('should...', function() {...}, { runOnly: true })
-```
+- `iit`. Start meteor with `ONLY_IT=true`
+- `T.ssuite`. No need for any additional environment variable.
 
 #### TODOS
 

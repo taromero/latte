@@ -1,6 +1,6 @@
-itIncludedCounter = 0
-
 T.suite(function() {
+
+  itIncludedCounter = 0
   
   describe('running selected `it` blocks using ONLY_IT', function() {
 

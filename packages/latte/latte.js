@@ -1,5 +1,4 @@
 T = {
-  suites: [],
   ssuite: function(testSuite, options) {
     options = options || {}
     T.suite(testSuite, _(options).extend({ runOnly: true }))
@@ -8,20 +7,25 @@ T = {
     options = options || {}
     runOnly = (options.runOnly === undefined) ? false : options.runOnly
     if (process.env.RUN_TESTS != 'true') { return }
-    if (process.env.ONLY_SUITE == 'true' && !runOnly) { return }
+    if (runOnly) {
+      T.runOnlySuites.push(testSuite)
+    }
     T.suites.push(testSuite)
     if (T.isFirstAddedSuite) { Meteor.startup(T.run) }
     T.isFirstAddedSuite = false
   },
   run: function() {
     if (process.env.RUN_TESTS != 'true') { return }
+
     var testingDB = new MongoInternals.RemoteCollectionDriver(T.testingDbUrl)
     getCollections().forEach(pointToTestingDB)
     getCollections().forEach(removeAll)
 
-    T.suites.forEach(function(testSuite) {
-      testSuite()
-    })
+    if (T.runOnlySuites.length > 0) {
+      T.runOnlySuites.forEach(exec)
+    } else {
+      T.suites.forEach(exec)
+    }
 
     log('')
     log((T.itCount + ' tests: ').yellow + (T.successfulItCount + ' passing, ').green + (T.itCount - T.successfulItCount + ' failing.').red)
@@ -95,6 +99,9 @@ T = {
     var prefix = _.range(deepLevel).reduce(function(a) { return a + '  '}, '')
     return prefix + type.magenta.bold + ' ' + label.cyan
   },
+  ignore: function() {},
+  suites: [],
+  runOnlySuites: [],
   postRunCallback: function() {},
   describeBlocks: [],
   exceptions: [],
