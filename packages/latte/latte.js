@@ -1,5 +1,9 @@
 T = {
   suites: [],
+  ssuite: function(testSuite, options) {
+    options = options || {}
+    T.suite(testSuite, _(options).extend({ runOnly: true }))
+  },
   suite: function(testSuite, options) {
     options = options || {}
     runOnly = (options.runOnly === undefined) ? false : options.runOnly
@@ -41,6 +45,10 @@ T = {
   },
   describe: descriptionBlock('describe'),
   context: descriptionBlock('context'),
+  iit: function(label, fn, options) {
+    options = options || {}
+    T.it(label, fn, _(options).extend({ runOnly: true }))
+  },
   it: function(label, fn, options) {
     options = options || {}
     runOnly = (options.runOnly === undefined) ? false : options.runOnly
@@ -149,6 +157,7 @@ function getCollections() {
 describe = T.describe.bind(T)
 context = T.context.bind(T)
 it = T.it.bind(T)
+iit = T.iit.bind(T)
 beforeAll = T.beforeAll.bind(T)
 beforeEach = T.beforeEach.bind(T)
 afterAll = T.afterAll.bind(T)

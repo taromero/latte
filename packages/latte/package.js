@@ -15,6 +15,7 @@ Package.onUse(function(api) {
   api.export('describe', 'server')
   api.export('context', 'server')
   api.export('it', 'server')
+  api.export('iit', 'server')
   api.export('beforeAll', 'server')
   api.export('beforeEach', 'server')
   api.export('afterAll', 'server')

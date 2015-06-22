@@ -2,8 +2,10 @@ var originalOnlySuite = process.env.ONLY_SUITE
 process.env.ONLY_SUITE = 'true'
 
 T.suite(function() {
+
+  throw 'suite should not run with ONLY_SUITE set to true'
   
-  describe('this should not run', function() {
+  describe('this should not run'.red, function() {
 
     beforeAll(function() {
       throw 'should not run beforeAll'

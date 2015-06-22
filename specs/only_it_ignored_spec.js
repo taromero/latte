@@ -26,15 +26,15 @@ T.suite(function() {
       b--
     })
 
-    it('should not run the `it` block', function() {
+    it('should not run the `it` block'.red, function() {
       expect(1).to.eq(2)
     })
 
-    it('should run the `it` block with runOnly set to true', function() {
+    iit('should run the `iit` block', function() {
       itIncludedCounter++
       a.should.eq(1)
       b.should.eq(1)
-    }, { runOnly: true })
+    })
 
     process.env.ONLY_IT = originalOnlySuite
 

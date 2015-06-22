@@ -3,7 +3,7 @@ process.env.ONLY_SUITE = 'true'
 
 suiteIncludedCounter = 0
 
-T.suite(function() {
+T.ssuite(function() {
   
   describe('running selected `suite` blocks using ONLY_SUITE', function() {
 
@@ -32,7 +32,7 @@ T.suite(function() {
       b.should.eq(1)
     })
 
-    it('should run even with runOnly set to true for the `it`', function() {
+    iit('should run even the `iit`', function() {
       suiteIncludedCounter++
       a.should.eq(1)
       b.should.eq(1)
@@ -40,6 +40,6 @@ T.suite(function() {
 
   })
 
-}, { runOnly: true })
+})
 
 process.env.ONLY_SUITE = originalOnlySuite
