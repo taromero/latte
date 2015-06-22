@@ -48,8 +48,6 @@ The aim of this project is to provide a minimal library to just run specs mocha-
 3. The spec should be contained inside a `T.suite` call.
 5. On the command line, run: `RUN_TESTS=true meteor --once`
 
-Sample project: https://github.com/taromero/latte-examples.
-
 ##### Run tests on code change
 
 Use `RUN_TESTS=true CONTINUOUS_TESTING=true meteor` to run tests automatically when files change. `CONTINUOUS_TESTING` tells Latte not to end the Meteor process.
