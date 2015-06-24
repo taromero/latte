@@ -39,6 +39,7 @@ The aim of this project is to provide a minimal library to just run specs mocha-
 - Cannot run assertions inside `before` or `after` blocks.
 - Very early stage of development.
 - Initially designed to work only on server side.
+- If the internet connection is flacky, it might take some seconds to end the Meteor process (this is due to some Meteor's internals).
 
 #### How to use
 
@@ -62,8 +63,8 @@ As latte doesn't use mirrors, it's just like debugging regular Meteor code. Run 
 
 2 selection options:
 
-- `iit`. Start meteor with `ONLY_IT=true`
-- `T.ssuite`. No need for any additional environment variable.
+- `iit`.
+- `T.ssuite`.
 
 #### TODOS
 

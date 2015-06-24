@@ -5,34 +5,39 @@ T = {
   },
   suite: function(testSuite, options) {
     options = options || {}
-    if (process.env.RUN_TESTS != 'true') { return }
+    if (!process.env.RUN_TESTS) { return }
     options.runOnly && T.runOnlySuites.push(testSuite)
     T.suites.push(testSuite)
-    T.isFirstAddedSuite && Meteor.startup(T.run)
+    T.isFirstAddedSuite && Meteor.startup(function() {
+      T.analize()
+      T.run()
+    })
     T.isFirstAddedSuite = false
   },
+  analize: function() {
+    T.analizing = true
+    T.suites.concat(T.runOnlySuites).forEach(exec)
+    T.analizing = false
+  },
   run: function() {
-    if (process.env.RUN_TESTS != 'true') { return }
+    if (!process.env.RUN_TESTS) { return }
 
     var testingDB = new MongoInternals.RemoteCollectionDriver(T.testingDbUrl)
     getCollections().forEach(pointToTestingDB)
     getCollections().forEach(removeAll)
 
-    if (T.runOnlySuites.length > 0) {
-      T.runOnlySuites.forEach(exec)
+    if (T.iitDescribeBlocks.length) {
+      T.iitDescribeBlocks.forEach(exec)
     } else {
-      T.suites.forEach(exec)
+      T.runOnlySuites.length ? T.runOnlySuites.forEach(exec) : T.suites.forEach(exec)
     }
 
-    log('')
-    log((T.itCount + ' tests: ').yellow + (T.successfulItCount + ' passing, ').green + (T.itCount - T.successfulItCount + ' failing.').red)
+    log('\n' + (T.itCount + ' tests: ').yellow + (T.successfulItCount + ' passing, ').green + (T.itCount - T.successfulItCount + ' failing.').red)
 
     getCollections().forEach(pointBackToDevelopDB)
     T.postRunCallback()
 
-    if (process.env.CONTINUOUS_TESTING != 'true') {
-      process.exit(T.exceptions.length)
-    }
+    !process.env.CONTINUOUS_TESTING && process.exit(T.exceptions.length)
 
     function pointToTestingDB(collection) {
       collection.latte_original_driver = collection._driver
@@ -47,13 +52,18 @@ T = {
   describe: descriptionBlock('describe'),
   context: descriptionBlock('context'),
   iit: function(label, fn, options) {
+    if (T.analizing) {
+      T.iitDescribeBlocks.push(T.currentRootDescribeBlock)
+      return
+    }
     options = options || {}
     T.it(label, fn, _(options).extend({ runOnly: true }))
   },
   it: function(label, fn, options) {
+    if (T.analizing) { return }
     options = options || {}
     msg = T.message('it', label, T.deepLevel)
-    if (process.env.ONLY_IT == 'true') {
+    if (T.iitDescribeBlocks.length) {
       if (!options.runOnly) { return }
       msg = msg.underline
     }
@@ -75,17 +85,19 @@ T = {
     }
   },
   beforeAll: function(fn) {
+    if (T.analizing) { return }
     T.beforeAllBlocks.push(fn)
   },
   beforeEach: function(fn) {
+    if (T.analizing) { return }
     T.beforeEachBlocks.push({ fn: fn, deepLevel: T.deepLevel })
   },
   afterAll: function(fn) {
-    if (itBlocksRunForDescribeBlock) {
-      fn()
-    }
+    if (T.analizing) { return }
+    if (itBlocksRunForDescribeBlock) { fn() }
   },
   afterEach: function(fn) {
+    if (T.analizing) { return }
     T.afterEachBlocks.push({ fn: fn, deepLevel: T.deepLevel })
   },
   message: function(type, label, deepLevel) {
@@ -105,7 +117,7 @@ T = {
   afterAllBlocks: [],
   beforeEachBlocks: [],
   afterEachBlocks: [],
-  itBlocksRunForDescribeBlock: false,
+  iitDescribeBlocks: [],
   isFirstAddedSuite: true,
   testingDbUrl: "mongodb://127.0.0.1:3001/meteor_latte"
 }
@@ -124,12 +136,25 @@ function removeAll(collection) {
 
 function descriptionBlock(type) {
   return function(label, fn) {
+    return T.analizing ? analizeBlock(label, fn) : describeBlock(label, fn)
+  }
+
+  function analizeBlock(label, fn) {
+    if (T.deepLevel == 0) {
+      T.currentRootDescribeBlock = describeBlock.bind(this, label, fn)
+    }
+    T.deepLevel++
+    fn()
+    T.deepLevel--
+  }
+
+  function describeBlock(label, fn) {
     itBlocksRunForDescribeBlock = false
     log(T.message(type, label, T.deepLevel))
     T.deepLevel++
     fn()
-    T.beforeEachBlocks.filter(sameLevel)
     T.deepLevel--
+    T.beforeEachBlocks.filter(sameLevel)
     if (T.deepLevel === 0) {
       getCollections().forEach(removeAll)
     }
@@ -141,7 +166,7 @@ function descriptionBlock(type) {
 }
 
 function log(obj) {
-  console.log(obj)
+  !T.analizing && console.log(obj)
 }
 
 function getCollections() {
