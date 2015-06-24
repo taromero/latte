@@ -5,13 +5,10 @@ T = {
   },
   suite: function(testSuite, options) {
     options = options || {}
-    runOnly = (options.runOnly === undefined) ? false : options.runOnly
     if (process.env.RUN_TESTS != 'true') { return }
-    if (runOnly) {
-      T.runOnlySuites.push(testSuite)
-    }
+    options.runOnly && T.runOnlySuites.push(testSuite)
     T.suites.push(testSuite)
-    if (T.isFirstAddedSuite) { Meteor.startup(T.run) }
+    T.isFirstAddedSuite && Meteor.startup(T.run)
     T.isFirstAddedSuite = false
   },
   run: function() {
@@ -55,14 +52,10 @@ T = {
   },
   it: function(label, fn, options) {
     options = options || {}
-    runOnly = (options.runOnly === undefined) ? false : options.runOnly
     msg = T.message('it', label, T.deepLevel)
     if (process.env.ONLY_IT == 'true') {
-      if (!runOnly) {
-        return
-      } else {
-        msg = msg.underline
-      }
+      if (!options.runOnly) { return }
+      msg = msg.underline
     }
 
     T.itCount++

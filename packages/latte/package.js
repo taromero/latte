@@ -20,5 +20,4 @@ Package.onUse(function(api) {
   api.export('beforeEach', 'server')
   api.export('afterAll', 'server')
   api.export('afterEach', 'server')
-  api.export('generateT', 'server')
 })
