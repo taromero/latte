@@ -22,7 +22,7 @@ The aim of this project is to provide a minimal library to just run specs mocha-
 #### Workflow
 
 1. Write your specs.
-2. Run `RUN_TESTS=true meteor --once`.
+2. Run `RUN_TESTS=1 meteor --once`.
 3. Watch test report.
 4. Watch the run finish returning the exit code (useful for CI).
 
@@ -47,11 +47,11 @@ The aim of this project is to provide a minimal library to just run specs mocha-
 2. `meteor add practicalmeteor:chai`. Latte needs an assetion library, and I've been using ChaiJS.
 2. Write a spec anywhere in a server directory.
 3. The spec should be contained inside a `T.suite` call.
-5. On the command line, run: `RUN_TESTS=true meteor --once`
+5. On the command line, run: `RUN_TESTS=1 meteor --once`
 
 ##### Run tests on code change
 
-Use `RUN_TESTS=true CONTINUOUS_TESTING=true meteor` to run tests automatically when files change. `CONTINUOUS_TESTING` tells Latte not to end the Meteor process.
+Use `RUN_TESTS=cont meteor` to run tests automatically when files change. `CONTINUOUS_TESTING` tells Latte not to end the Meteor process. Ideally, not using the `--once` argument should be enough to allow continuous testing, but doesn't seem to be a way to detect which arguments were used when running meteor (like we can in simple nodejs apps).
 
 Latte uses testing's DB when running tests, and switches back to develop's db after running tests.
 
@@ -61,10 +61,11 @@ As latte doesn't use mirrors, it's just like debugging regular Meteor code. Run 
 
 ##### Run selected tests
 
-2 selection options:
+3 selection options:
 
-- `iit`.
 - `T.ssuite`.
+- `ddescribe`/`ccontext`.
+- `iit`.
 
 #### TODOS
 

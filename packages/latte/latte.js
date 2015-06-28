@@ -26,8 +26,10 @@ T = {
     getCollections().forEach(pointToTestingDB)
     getCollections().forEach(removeAll)
 
-    if (T.iitDescribeBlocks.length) {
-      T.iitDescribeBlocks.forEach(exec)
+    if (T.onlyRootDescribeBlocksForIit.length) {
+      _(T.onlyRootDescribeBlocksForIit).uniq().forEach(setDeepLevelAndExec)
+    } else if (T.onlyRootDescribeBlocks.length) {
+      _(T.onlyRootDescribeBlocks).uniq().forEach(setDeepLevelAndExec)
     } else {
       T.runOnlySuites.length ? T.runOnlySuites.forEach(exec) : T.suites.forEach(exec)
     }
@@ -37,7 +39,7 @@ T = {
     getCollections().forEach(pointBackToDevelopDB)
     T.postRunCallback()
 
-    !process.env.CONTINUOUS_TESTING && process.exit(T.exceptions.length)
+    process.env.RUN_TESTS != 'cont' && process.exit(T.exceptions.length)
 
     function pointToTestingDB(collection) {
       collection.latte_original_driver = collection._driver
@@ -48,12 +50,21 @@ T = {
     function pointBackToDevelopDB(collection) {
       collection._collection = collection.latte_original_driver.open(collection._name, collection._connection)
     }
+
+    function setDeepLevelAndExec(obj) {
+      T.onlyDescribeDeepLevel = obj.deepLevel
+      obj.block()
+    }
   },
+  ddescribe: descriptionBlock('describe', true),
+  ccontext: descriptionBlock('context', true),
   describe: descriptionBlock('describe'),
   context: descriptionBlock('context'),
   iit: function(label, fn, options) {
     if (T.analizing) {
-      T.iitDescribeBlocks.push(T.currentRootDescribeBlock)
+      if (!_(_(T.onlyRootDescribeBlocksForIit).pluck('block')).contains(T.currentRootDescribeBlock)) {
+        T.onlyRootDescribeBlocksForIit.push({ block: T.currentRootDescribeBlock, deepLevel: T.deepLevel })
+      }
       return
     }
     options = options || {}
@@ -63,8 +74,11 @@ T = {
     if (T.analizing) { return }
     options = options || {}
     msg = T.message('it', label, T.deepLevel)
-    if (T.iitDescribeBlocks.length) {
+    if (T.onlyRootDescribeBlocksForIit.length) {
       if (!options.runOnly) { return }
+      msg = msg.underline
+    } else if (T.onlyRootDescribeBlocks.length) {
+      if (T.onlyDescribeDeepLevel >= T.deepLevel) {  return }
       msg = msg.underline
     }
 
@@ -117,31 +131,29 @@ T = {
   afterAllBlocks: [],
   beforeEachBlocks: [],
   afterEachBlocks: [],
-  iitDescribeBlocks: [],
+  onlyRootDescribeBlocks: [],
+  onlyRootDescribeBlocksForIit: [],
   isFirstAddedSuite: true,
   testingDbUrl: "mongodb://127.0.0.1:3001/meteor_latte"
 }
 
-function fns(obj) {
-  return obj.fn
-}
+function fns(obj) { return obj.fn }
 
-function exec(fn) {
-  fn()
-}
+function exec(fn) { fn() }
 
-function removeAll(collection) {
-  collection.remove({})
-}
+function removeAll(collection) { collection.remove({}) }
 
-function descriptionBlock(type) {
+function descriptionBlock(type, onlyBlock) {
   return function(label, fn) {
     return T.analizing ? analizeBlock(label, fn) : describeBlock(label, fn)
   }
 
   function analizeBlock(label, fn) {
-    if (T.deepLevel == 0) {
-      T.currentRootDescribeBlock = describeBlock.bind(this, label, fn)
+    if (T.deepLevel == 0) { T.currentRootDescribeBlock = describeBlock.bind(this, label, fn) }
+    if (onlyBlock) {
+      if (!_(_(T.onlyRootDescribeBlocks).pluck('block')).contains(T.currentRootDescribeBlock)) {
+        T.onlyRootDescribeBlocks.push({ block: T.currentRootDescribeBlock, deepLevel: T.deepLevel })
+      }
     }
     T.deepLevel++
     fn()
@@ -187,4 +199,6 @@ beforeAll = T.beforeAll.bind(T)
 beforeEach = T.beforeEach.bind(T)
 afterAll = T.afterAll.bind(T)
 afterEach = T.afterEach.bind(T)
+ddescribe = T.ddescribe.bind(T)
+ccontext = T.ccontext.bind(T)
 
