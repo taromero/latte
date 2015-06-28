@@ -1,48 +1,55 @@
 T = {
-  ssuite: function(testSuite, options) {
+  ssuite: function(testSuite, options) { // wrapper for `suite` to only run selected suites
     options = options || {}
     T.suite(testSuite, _(options).extend({ runOnly: true }))
   },
   suite: function(testSuite, options) {
     options = options || {}
-    if (!process.env.RUN_TESTS) { return }
-    options.runOnly && T.runOnlySuites.push(testSuite)
-    T.suites.push(testSuite)
-    T.isFirstAddedSuite && Meteor.startup(function() {
-      T.analize()
-      T.run()
+    if (!process.env.RUN_TESTS) { return } // don't run any test related stuff unless explicitly told so
+    if (options.runOnly) {
+      T.runOnlySuites.push(testSuite) // if `runOnly` is specified (when using `ssuite`), keep track in a separate suite array
+    } else {
+      T.suites.push(testSuite)
+    }
+    T.isFirstAddedSuite && Meteor.startup(function() { // upon first suite addition, add a callback to startup to run tests
+      T.analize() // look at suites structure and prepare the test run (this allows, for example, iit behavior)
+      T.run() // run code defined inside suites (describe blocks)
     })
     T.isFirstAddedSuite = false
   },
-  analize: function() {
-    T.analizing = true
+  analize: function() { // this lets us analyze suite's structure to act accordingly later (allowing, for example, iit blocks to work)
+    T.analyzing = true
     T.suites.concat(T.runOnlySuites).forEach(exec)
-    T.analizing = false
+    T.analyzing = false
   },
   run: function() {
     if (!process.env.RUN_TESTS) { return }
 
-    var testingDB = new MongoInternals.RemoteCollectionDriver(T.testingDbUrl)
-    getCollections().forEach(pointToTestingDB)
-    getCollections().forEach(removeAll)
+    var testingDB = new MongoInternals.RemoteCollectionDriver(T.testingDbUrl) // create a driver pointing to testing's DB
+    getCollections().forEach(pointToTestingDB) // point collections to testing's DB
+    getCollections().forEach(removeAll) // erase date on testing DB (though there should be none)
 
-    if (T.onlyRootDescribeBlocksForIit.length) {
-      _(T.onlyRootDescribeBlocksForIit).uniq().forEach(setDeepLevelAndExec)
-    } else if (T.onlyRootDescribeBlocks.length) {
-      _(T.onlyRootDescribeBlocks).uniq().forEach(setDeepLevelAndExec)
-    } else {
-      T.runOnlySuites.length ? T.runOnlySuites.forEach(exec) : T.suites.forEach(exec)
+    if (T.onlyRootDescribeBlocksForIit.length) { // if there's `iit` blocks, only run those
+      T.onlyRootDescribeBlocksForIit.forEach(exec)
+    } else if (T.onlyRootDescribeBlocks.length) { // if no `iit` blocks, but `ddescribe` blocks, only run those
+      T.onlyRootDescribeBlocks.uniq().forEach(function(dblock) {
+        T.onlyDescribeDeepLevel = dblock.deepLevel // we keep track of deepLevel to only run `it` blocks from that level forward
+        dblock.block()
+      })
+    } else { // else, run all blocks
+      T.runOnlySuites.length ? T.runOnlySuites.forEach(exec) : T.suites.forEach(exec) // if there are `runOnlySuites` only run those
     }
 
+    // output number of successful over total tests
     log('\n' + (T.itCount + ' tests: ').yellow + (T.successfulItCount + ' passing, ').green + (T.itCount - T.successfulItCount + ' failing.').red)
 
-    getCollections().forEach(pointBackToDevelopDB)
-    T.postRunCallback()
+    getCollections().forEach(pointBackToDevelopDB) // point collections back to development's DB
+    T.postRunCallback() // allow to run a callback when testing has finished (before possibly ending the process)
 
-    process.env.RUN_TESTS != 'cont' && process.exit(T.exceptions.length)
+    process.env.RUN_TESTS != 'cont' && process.exit(T.exceptions.length) // end the process unless option is specified
 
     function pointToTestingDB(collection) {
-      collection.latte_original_driver = collection._driver
+      collection.latte_original_driver = collection._driver // keep track of original driver, to point back to development's DB once tests have finished
       collection._driver = testingDB
       collection._collection = collection._driver.open(collection._name, collection._connection)
     }
@@ -50,71 +57,67 @@ T = {
     function pointBackToDevelopDB(collection) {
       collection._collection = collection.latte_original_driver.open(collection._name, collection._connection)
     }
-
-    function setDeepLevelAndExec(obj) {
-      T.onlyDescribeDeepLevel = obj.deepLevel
-      obj.block()
-    }
   },
   ddescribe: descriptionBlock('describe', true),
   ccontext: descriptionBlock('context', true),
   describe: descriptionBlock('describe'),
   context: descriptionBlock('context'),
   iit: function(label, fn, options) {
-    if (T.analizing) {
-      if (!_(_(T.onlyRootDescribeBlocksForIit).pluck('block')).contains(T.currentRootDescribeBlock)) {
-        T.onlyRootDescribeBlocksForIit.push({ block: T.currentRootDescribeBlock, deepLevel: T.deepLevel })
+    if (T.analyzing) {
+      if (!_(_(T.onlyRootDescribeBlocksForIit).pluck('block')).contains(T.currentRootDescribeBlock)) { // only if we have not already added the root describe
+        // keeping track of the root describe allow as to run all before/after hooks from the beginning, even if the `ddescribe`
+        // block is nested within `describe` blocks. This also allow to print all labels from the beginning
+        T.onlyRootDescribeBlocksForIit.push(T.currentRootDescribeBlock)
       }
-      return
     }
     options = options || {}
     T.it(label, fn, _(options).extend({ runOnly: true }))
   },
   it: function(label, fn, options) {
-    if (T.analizing) { return }
+    if (T.analyzing) { return } // don't run `it` blocks when analyzing
     options = options || {}
-    msg = T.message('it', label, T.deepLevel)
-    if (T.onlyRootDescribeBlocksForIit.length) {
-      if (!options.runOnly) { return }
+    msg = T.message('it', label, T.deepLevel) // generate msg for reports
+    if (T.onlyRootDescribeBlocksForIit.length) { // if there's any `iit` block
+      if (!options.runOnly) { return } // only run `iit` blocks
       msg = msg.underline
-    } else if (T.onlyRootDescribeBlocks.length) {
-      if (T.onlyDescribeDeepLevel >= T.deepLevel) {  return }
+    } else if (T.onlyRootDescribeBlocks.length) { // if there's any `ddescribe` block
+      if (T.onlyDescribeDeepLevel >= T.deepLevel) { return } // only run `it` blocks from `ddescribe`'s deep level onwards
       msg = msg.underline
     }
 
-    T.itCount++
+    T.itCount++ // count number of tests, for reports
     try {
-      T.beforeAllBlocks.forEach(exec)
-      T.beforeEachBlocks.map(fns).forEach(exec)
-      T.beforeAllBlocks = []
-      fn()
-      itBlocksRunForDescribeBlock = true
-      T.afterEachBlocks.map(fns).forEach(exec)
-      T.successfulItCount++
-      log((msg + ' (/)'.green))
+      T.beforeAllBlocks.forEach(exec)           // run beforeAll blocks
+      T.beforeEachBlocks.map(fns).forEach(exec) // run beforeEach blocks
+      T.beforeAllBlocks = []                    // empty beforeAll block array
+      fn()                                      // run assertions in it block
+      itBlocksRunForDescribeBlock = true        // flag to know if we should run afterAll blocks
+      T.afterEachBlocks.map(fns).forEach(exec)  // run afterEach blocks
+      T.successfulItCount++                     // count number of successful tests, for reports
+      log((msg + ' (/)'.green))                 // log into stdout tests label and result
     } catch(e) {
       log(msg + ' (X)'.red)
       log(e.stack)
-      T.exceptions.push(e)
+      T.exceptions.push(e)                      // if `T.exceptions` has any item at the en of the test run, exit code will be != 0
     }
   },
   beforeAll: function(fn) {
-    if (T.analizing) { return }
-    T.beforeAllBlocks.push(fn)
+    if (T.analyzing) { return }
+    T.beforeAllBlocks.push(fn)  // keep track of beforeAll blocks, to run them later
   },
   beforeEach: function(fn) {
-    if (T.analizing) { return }
+    if (T.analyzing) { return }
     T.beforeEachBlocks.push({ fn: fn, deepLevel: T.deepLevel })
   },
   afterAll: function(fn) {
-    if (T.analizing) { return }
+    if (T.analyzing) { return }
     if (itBlocksRunForDescribeBlock) { fn() }
   },
   afterEach: function(fn) {
-    if (T.analizing) { return }
+    if (T.analyzing) { return }
     T.afterEachBlocks.push({ fn: fn, deepLevel: T.deepLevel })
   },
-  message: function(type, label, deepLevel) {
+  message: function(type, label, deepLevel) { // pretty print messages for console report
     var prefix = _.range(deepLevel).reduce(function(a) { return a + '  '}, '')
     return prefix + type.magenta.bold + ' ' + label.cyan
   },
@@ -145,7 +148,7 @@ function removeAll(collection) { collection.remove({}) }
 
 function descriptionBlock(type, onlyBlock) {
   return function(label, fn) {
-    return T.analizing ? analizeBlock(label, fn) : describeBlock(label, fn)
+    return T.analyzing ? analizeBlock(label, fn) : describeBlock(label, fn)
   }
 
   function analizeBlock(label, fn) {
@@ -178,17 +181,19 @@ function descriptionBlock(type, onlyBlock) {
 }
 
 function log(obj) {
-  !T.analizing && console.log(obj)
+  !T.analyzing && console.log(obj) // prevent logging while analyzing the suites
 }
 
 function getCollections() {
-  collections = []
-  for (var globalObject in global) {
-    if (global[globalObject] instanceof Meteor.Collection) {
-      collections.push(global[globalObject])
-    }
+  return Object.keys(global).map(toGlobalObject).filter(nonMeteorCollections)
+
+  function toGlobalObject(key) {
+    return global[key]
   }
-  return collections
+
+  function nonMeteorCollections(globalObject) {
+    return globalObject instanceof Meteor.Collection
+  }
 }
 
 describe = T.describe.bind(T)

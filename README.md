@@ -67,8 +67,7 @@ As latte doesn't use mirrors, it's just like debugging regular Meteor code. Run 
 - `ddescribe`/`ccontext`.
 - `iit`.
 
-#### TODOS
+#### Known TODOS
 
 - Add timeout failures.
-- Add comments to the code.
-- Others.
+- Allow specifying suite to run on test command.
