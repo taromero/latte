@@ -67,6 +67,17 @@ As latte doesn't use mirrors, it's just like debugging regular Meteor code. Run 
 - `ddescribe`/`ccontext`.
 - `iit`.
 
+Also, you can select specific/s suites from the command line. To do so, you must put a label for the suites you want to include/exclude. Usage example:
+
+```
+T.suite('a suite name', function() { ... })
+```
+
+From the command line:
+
+  * run only a list a suites: `RUN_TESTS=1 LATTE_SUITES=["a suite name"] meteor --once`.
+  * run all but a list a suites: `RUN_TESTS=1 LATTE_SUITES=["~a suite name"] meteor --once`.
+
 #### Known TODOS
 
 - Add timeout failures.

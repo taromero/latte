@@ -6,7 +6,7 @@ should()
 
 SampleCollection.find().count().should.eq(1)
 
-T.suite(function() {
+T.suite('separate dbs', function() {
 
   describe('latte should use a separate DB from develop', function() {
 

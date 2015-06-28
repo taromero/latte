@@ -1,11 +1,25 @@
 T = {
-  ssuite: function(testSuite, options) { // wrapper for `suite` to only run selected suites
+  ssuite: function(suiteName, testSuite, options) { // wrapper for `suite` to only run selected suites
+    if (suiteName instanceof Function) {
+      testSuite = suiteName
+      options = testSuite
+      suiteName = ''
+    }
     options = options || {}
-    T.suite(testSuite, _(options).extend({ runOnly: true }))
+    T.suite(suiteName, testSuite, _(options).extend({ runOnly: true }))
   },
-  suite: function(testSuite, options) {
+  suite: function(suiteName, testSuite, options) {
+    if (suiteName instanceof Function) {
+      testSuite = suiteName
+      options = testSuite
+      suiteName = ''
+    }
     options = options || {}
     if (!process.env.RUN_TESTS) { return } // don't run any test related stuff unless explicitly told so
+
+    latte_suites_args = process.env.LATTE_SUITES && JSON.parse(process.env.LATTE_SUITES)
+    if (latte_suites_args && latte_suites_args.some(preventsSuiteFromRunning)) { return }
+
     if (options.runOnly) {
       T.runOnlySuites.push(testSuite) // if `runOnly` is specified (when using `ssuite`), keep track in a separate suite array
     } else {
@@ -16,6 +30,16 @@ T = {
       T.run() // run code defined inside suites (describe blocks)
     })
     T.isFirstAddedSuite = false
+
+    function preventsSuiteFromRunning(latte_suite_arg) {
+      if (startsWith(latte_suite_arg, '~')) {
+        if (latte_suite_arg.replace('~', '') == suiteName) {
+          return true
+        }
+      } else if (latte_suite_arg != suiteName) {
+        return true
+      }
+    }
   },
   analize: function() { // this lets us analyze suite's structure to act accordingly later (allowing, for example, iit blocks to work)
     T.analyzing = true
@@ -182,6 +206,10 @@ function descriptionBlock(type, onlyBlock) {
 
 function log(obj) {
   !T.analyzing && console.log(obj) // prevent logging while analyzing the suites
+}
+
+function startsWith(str, needle) {
+  return str.indexOf(needle) == 0
 }
 
 function getCollections() {
