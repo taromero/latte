@@ -88,7 +88,7 @@ T = {
   context: descriptionBlock('context'),
   iit: function(label, fn, options) {
     if (T.analyzing) {
-      if (!_(_(T.onlyRootDescribeBlocksForIit).pluck('block')).contains(T.currentRootDescribeBlock)) { // only if we have not already added the root describe
+      if (!_(T.onlyRootDescribeBlocksForIit).contains(T.currentRootDescribeBlock)) { // only if we have not already added the root describe
         // keeping track of the root describe allow as to run all before/after hooks from the beginning, even if the `ddescribe`
         // block is nested within `describe` blocks. This also allow to print all labels from the beginning
         T.onlyRootDescribeBlocksForIit.push(T.currentRootDescribeBlock)
@@ -115,8 +115,9 @@ T = {
       T.beforeEachBlocks.map(fns).forEach(exec) // run beforeEach blocks
       T.beforeAllBlocks = []                    // empty beforeAll block array
       fn()                                      // run assertions in it block
-      itBlocksRunForDescribeBlock = true        // flag to know if we should run afterAll blocks
       T.afterEachBlocks.map(fns).forEach(exec)  // run afterEach blocks
+      T.afterAllBlocks.forEach(exec)            // run afterAll blocks
+      T.afterAllBlocks = []                     // empty afterAll block array
       T.successfulItCount++                     // count number of successful tests, for reports
       log((msg + ' (/)'.green))                 // log into stdout tests label and result
     } catch(e) {
@@ -135,7 +136,7 @@ T = {
   },
   afterAll: function(fn) {
     if (T.analyzing) { return }
-    if (itBlocksRunForDescribeBlock) { fn() }
+    T.beforeAllBlocks.push(fn)
   },
   afterEach: function(fn) {
     if (T.analyzing) { return }
@@ -188,7 +189,6 @@ function descriptionBlock(type, onlyBlock) {
   }
 
   function describeBlock(label, fn) {
-    itBlocksRunForDescribeBlock = false
     log(T.message(type, label, T.deepLevel))
     T.deepLevel++
     fn()

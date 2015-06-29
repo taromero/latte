@@ -1,6 +1,9 @@
 sudo: required
 language: node_js
+env:
+  - SUITES=["iit suite"]
+  - SUITES=["~iit suite"]
 before_install:
   - curl https://install.meteor.com | /bin/sh
 script:
-  - RUN_TESTS=true meteor --once
+  - "RUN_TESTS=true LATTE_SUITES=$SUITES meteor --once"
