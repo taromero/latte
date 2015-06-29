@@ -28,16 +28,15 @@ The aim of this project is to provide a minimal library to just run specs mocha-
 
 #### Features
 
-- It connects to a separate DB from development's one. You can specify which DB to use by setting T.testingDbUrl. The default is `mongodb://127.0.0.1:3001/meteor_latte`.
-- It cleans up the database upon start, and after running each describe block.
-- Simple (yet nice?) console based report.
-- It runs inside Meteor's context (you can user global variables, such as Meteor collections).
+- It connects to a `separate DB` from development's one. You can specify which DB to use by setting T.testingDbUrl. The default is `mongodb://127.0.0.1:3001/meteor_latte`.
+- It `cleans up the database` upon start, and after running each describe block.
+- Simple (yet nice?) `console based report`.
+- It runs inside `Meteor's context` (you can user global variables, such as Meteor collections).
 
 #### Gotchas
 
 - `afterAll` and `afterEach` must be declared before `it` blocks in each `describe` or `context` block.
 - Cannot run assertions inside `before` or `after` blocks.
-- Very early stage of development.
 - Initially designed to work only on server side.
 - If the internet connection is flacky, it might take some seconds to end the Meteor process (this is due to some Meteor's internals).
 
@@ -61,10 +60,9 @@ As latte doesn't use mirrors, it's just like debugging regular Meteor code. Run 
 
 ##### Run selected tests
 
-3 selection options:
+2 selection options:
 
 - `T.ssuite`.
-- `ddescribe`/`ccontext`.
 - `iit`.
 
 Also, you can select specific/s suites from the command line. To do so, you must put a label for the suites you want to include/exclude. Usage example:
@@ -81,4 +79,6 @@ From the command line:
 #### Known TODOS
 
 - Add timeout failures.
+- Add code coverage tool support.
+- Add ability to run only tests that cover the changed section of code (?).
 - Allow specifying suite to run on test command.

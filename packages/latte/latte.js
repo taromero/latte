@@ -55,11 +55,6 @@ T = {
 
     if (T.onlyRootDescribeBlocksForIit.length) { // if there's `iit` blocks, only run those
       T.onlyRootDescribeBlocksForIit.forEach(exec)
-    } else if (T.onlyRootDescribeBlocks.length) { // if no `iit` blocks, but `ddescribe` blocks, only run those
-      T.onlyRootDescribeBlocks.uniq().forEach(function(dblock) {
-        T.onlyDescribeDeepLevel = dblock.deepLevel // we keep track of deepLevel to only run `it` blocks from that level forward
-        dblock.block()
-      })
     } else { // else, run all blocks
       T.runOnlySuites.length ? T.runOnlySuites.forEach(exec) : T.suites.forEach(exec) // if there are `runOnlySuites` only run those
     }
@@ -82,15 +77,13 @@ T = {
       collection._collection = collection.latte_original_driver.open(collection._name, collection._connection)
     }
   },
-  ddescribe: descriptionBlock('describe', true),
-  ccontext: descriptionBlock('context', true),
   describe: descriptionBlock('describe'),
   context: descriptionBlock('context'),
   iit: function(label, fn, options) {
     if (T.analyzing) {
       if (!_(T.onlyRootDescribeBlocksForIit).contains(T.currentRootDescribeBlock)) { // only if we have not already added the root describe
-        // keeping track of the root describe allow as to run all before/after hooks from the beginning, even if the `ddescribe`
-        // block is nested within `describe` blocks. This also allow to print all labels from the beginning
+        // keeping track of the root describe allow as to run all before/after hooks from the beginning.
+        // This also allow to print all labels from the beginning
         T.onlyRootDescribeBlocksForIit.push(T.currentRootDescribeBlock)
       }
     }
@@ -101,23 +94,24 @@ T = {
     if (T.analyzing) { return } // don't run `it` blocks when analyzing
     options = options || {}
     msg = T.message('it', label, T.deepLevel) // generate msg for reports
+
     if (T.onlyRootDescribeBlocksForIit.length) { // if there's any `iit` block
       if (!options.runOnly) { return } // only run `iit` blocks
       msg = msg.underline
-    } else if (T.onlyRootDescribeBlocks.length) { // if there's any `ddescribe` block
-      if (T.onlyDescribeDeepLevel >= T.deepLevel) { return } // only run `it` blocks from `ddescribe`'s deep level onwards
-      msg = msg.underline
+    }
+
+    while(T.describeMessages.length) { // only print `describe` labels if their nested `it` blocks get executed
+      console.log(T.describeMessages.shift())
     }
 
     T.itCount++ // count number of tests, for reports
     try {
-      T.beforeAllBlocks.forEach(exec)           // run beforeAll blocks
+      T.itBlockRunLevel = T.deepLevel
+      T.beforeAllBlocks.map(fns).forEach(exec)           // run beforeAll blocks
       T.beforeEachBlocks.map(fns).forEach(exec) // run beforeEach blocks
       T.beforeAllBlocks = []                    // empty beforeAll block array
       fn()                                      // run assertions in it block
       T.afterEachBlocks.map(fns).forEach(exec)  // run afterEach blocks
-      T.afterAllBlocks.forEach(exec)            // run afterAll blocks
-      T.afterAllBlocks = []                     // empty afterAll block array
       T.successfulItCount++                     // count number of successful tests, for reports
       log((msg + ' (/)'.green))                 // log into stdout tests label and result
     } catch(e) {
@@ -128,7 +122,7 @@ T = {
   },
   beforeAll: function(fn) {
     if (T.analyzing) { return }
-    T.beforeAllBlocks.push(fn)  // keep track of beforeAll blocks, to run them later
+    T.beforeAllBlocks.push({ fn: fn, deepLevel: T.deepLevel })  // keep track of beforeAll blocks, to run them later
   },
   beforeEach: function(fn) {
     if (T.analyzing) { return }
@@ -136,7 +130,7 @@ T = {
   },
   afterAll: function(fn) {
     if (T.analyzing) { return }
-    T.beforeAllBlocks.push(fn)
+    T.afterAllBlocks.push({ fn: fn, deepLevel: T.deepLevel })
   },
   afterEach: function(fn) {
     if (T.analyzing) { return }
@@ -153,14 +147,16 @@ T = {
   describeBlocks: [],
   exceptions: [],
   deepLevel: 0,
+  horizontalLevel: 0,
   itCount: 0,
   successfulItCount: 0,
   beforeAllBlocks: [],
   afterAllBlocks: [],
   beforeEachBlocks: [],
   afterEachBlocks: [],
-  onlyRootDescribeBlocks: [],
   onlyRootDescribeBlocksForIit: [],
+  describeMessages: [],
+  itBlockRunLevel: 0,
   isFirstAddedSuite: true,
   testingDbUrl: "mongodb://127.0.0.1:3001/meteor_latte"
 }
@@ -171,29 +167,30 @@ function exec(fn) { fn() }
 
 function removeAll(collection) { collection.remove({}) }
 
-function descriptionBlock(type, onlyBlock) {
+function descriptionBlock(type) {
   return function(label, fn) {
     return T.analyzing ? analizeBlock(label, fn) : describeBlock(label, fn)
   }
 
   function analizeBlock(label, fn) {
     if (T.deepLevel == 0) { T.currentRootDescribeBlock = describeBlock.bind(this, label, fn) }
-    if (onlyBlock) {
-      if (!_(_(T.onlyRootDescribeBlocks).pluck('block')).contains(T.currentRootDescribeBlock)) {
-        T.onlyRootDescribeBlocks.push({ block: T.currentRootDescribeBlock, deepLevel: T.deepLevel })
-      }
-    }
     T.deepLevel++
     fn()
     T.deepLevel--
   }
 
   function describeBlock(label, fn) {
-    log(T.message(type, label, T.deepLevel))
+    T.describeMessages.push(T.message(type, label, T.deepLevel))
     T.deepLevel++
     fn()
+    if (T.itBlockRunLevel >= T.deepLevel) {
+      T.afterAllBlocks.filter(sameLevel).map(fns).forEach(exec) // only run afterAll blocks for this level
+    }
+    T.itBlockRunLevel = T.deepLevel
+    T.describeMessages = []
+    contextBlocks = ['beforeAll', 'beforeEach', 'afterEach', 'afterAll']
+    contextBlocks.forEach(filterFromSameLevel)
     T.deepLevel--
-    T.beforeEachBlocks.filter(sameLevel)
     if (T.deepLevel === 0) {
       getCollections().forEach(removeAll)
     }
@@ -202,6 +199,15 @@ function descriptionBlock(type, onlyBlock) {
   function sameLevel(obj) {
     return obj.deepLevel == T.deepLevel
   }
+
+  function filterFromSameLevel(blockName) {
+    T[blockName + 'Blocks'] = T[blockName + 'Blocks'].filter(differentLevel)
+
+    function differentLevel(obj) {
+      return obj.deepLevel != T.deepLevel
+    }
+  }
+
 }
 
 function log(obj) {
@@ -232,6 +238,4 @@ beforeAll = T.beforeAll.bind(T)
 beforeEach = T.beforeEach.bind(T)
 afterAll = T.afterAll.bind(T)
 afterEach = T.afterEach.bind(T)
-ddescribe = T.ddescribe.bind(T)
-ccontext = T.ccontext.bind(T)
 
