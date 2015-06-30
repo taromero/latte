@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/taromero/latte.svg?branch=master)](https://travis-ci.org/taromero/latte)
 
 ![](https://raw.githubusercontent.com/taromero/latte/master/readme_images/latte.png)
-![](https://raw.githubusercontent.com/taromero/latte/master/readme_images/latte_failure_example.png)
+![](https://raw.githubusercontent.com/taromero/latte/master/readme_images/latte2.png)
 
 #### What it is
 
@@ -50,7 +50,7 @@ The aim of this project is to provide a minimal library to just run specs mocha-
 
 ##### Run tests on code change
 
-Use `RUN_TESTS=cont meteor` to run tests automatically when files change. `CONTINUOUS_TESTING` tells Latte not to end the Meteor process. Ideally, not using the `--once` argument should be enough to allow continuous testing, but doesn't seem to be a way to detect which arguments were used when running meteor (like we can in simple nodejs apps).
+Use `RUN_TESTS=cont meteor` to run tests automatically when files change. `cont` tells Latte not to end the Meteor process. Ideally, not using the `--once` argument should be enough to allow continuous testing, but doesn't seem to be a way to detect which arguments were used when running meteor (like we can in simple nodejs apps).
 
 Latte uses testing's DB when running tests, and switches back to develop's db after running tests.
 
@@ -73,8 +73,8 @@ T.suite('a suite name', function() { ... })
 
 From the command line:
 
-  * run only a list a suites: `RUN_TESTS=1 LATTE_SUITES=["a suite name"] meteor --once`.
-  * run all but a list a suites: `RUN_TESTS=1 LATTE_SUITES=["~a suite name"] meteor --once`.
+  * run only a list a suites: `RUN_TESTS=1 LATTE_SUITES='["a suite name"]' meteor --once`.
+  * run all but a list a suites: `RUN_TESTS=1 LATTE_SUITES='["~a suite name"]' meteor --once`.
 
 #### Known TODOS
 
