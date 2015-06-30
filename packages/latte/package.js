@@ -1,6 +1,6 @@
 Package.describe({
   name: 'canotto90:latte',
-  version: '0.1.1',
+  version: '0.2.0',
   summary: 'Run mocha-like specs in Meteor, without Velocity\'s overhead.',
   git: 'https://github.com/taromero/latte.git',
   documentation: '../../README.md'
