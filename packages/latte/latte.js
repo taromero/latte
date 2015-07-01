@@ -191,9 +191,7 @@ function descriptionBlock(type) {
     contextBlocks = ['beforeAll', 'beforeEach', 'afterEach', 'afterAll']
     contextBlocks.forEach(filterFromSameLevel)
     T.deepLevel--
-    if (T.deepLevel === 0) {
-      getCollections().forEach(removeAll)
-    }
+    getCollections().forEach(removeAll)
   }
 
   function sameLevel(obj) {
