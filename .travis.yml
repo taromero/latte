@@ -1,8 +1,8 @@
 sudo: required
 language: node_js
 env:
-  - SUITES='["iit suite"]'
-  - SUITES='["~iit suite"]'
+  - SUITES='["iit behaviour"]'
+  - SUITES='["~iit behaviour"]'
 before_install:
   - curl https://install.meteor.com | /bin/sh
 script:

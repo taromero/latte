@@ -1,7 +1,7 @@
 T = {
   analize: function() { // this lets us analyze suite's structure to act accordingly later (allowing, for example, iit blocks to work)
     T.analyzing = true
-    T.suites.concat(T.runOnlySuites).forEach(exec)
+    T.suites.forEach(exec)
     T.analyzing = false
   },
   run: function() {
@@ -11,11 +11,7 @@ T = {
     getCollections().forEach(pointToTestingDB) // point collections to testing's DB
     getCollections().forEach(removeAll) // erase date on testing DB (though there should be none)
 
-    if (T.onlyRootDescribeBlocksForIit.length) { // if there's `iit` blocks, only run those
-      T.onlyRootDescribeBlocksForIit.forEach(exec)
-    } else { // else, run all blocks
-      T.runOnlySuites.length ? T.runOnlySuites.forEach(exec) : T.suites.forEach(exec) // if there are `runOnlySuites` only run those
-    }
+    T.onlyRootDescribeBlocksForIit.length ? T.onlyRootDescribeBlocksForIit.forEach(exec) : T.suites.forEach(exec) // if there's `iit` blocks, only run those
 
     // output number of successful over total tests
     log('\n' + (T.itCount + ' tests: ').yellow + (T.successfulItCount + ' passing, ').green + (T.itCount - T.successfulItCount + ' failing.').red)
@@ -37,6 +33,8 @@ T = {
   },
   describe: descriptionBlock('describe'),
   context: descriptionBlock('context'),
+  ddescribe: descriptionBlock('describe', { runOnly: true }),
+  ccontext: descriptionBlock('context', { runOnly: true }),
   iit: function(label, fn, options) {
     if (T.analyzing) {
       if (!_(T.onlyRootDescribeBlocksForIit).contains(T.currentRootDescribeBlock)) { // only if we have not already added the root describe
@@ -102,7 +100,6 @@ T = {
   },
   ignore: function() {},
   suites: [],
-  runOnlySuites: [],
   postRunCallback: function() {},
   describeBlocks: [],
   exceptions: [],
@@ -119,7 +116,12 @@ T = {
   itBlockRunLevel: 0,
   isFirstAddedSuite: true,
   analyzing: true,
+  onlySuites: [],
   testingDbUrl: "mongodb://127.0.0.1:3001/meteor_latte"
+}
+
+if (process.env.LATTE_SUITES) {
+  T.onlySuites = T.onlySuites.concat(JSON.parse(process.env.LATTE_SUITES))
 }
 
 function fns(obj) { return obj.fn }
@@ -132,30 +134,18 @@ function descriptionBlock(type, options) {
   if (!process.env.RUN_TESTS) { return } // don't run any test related stuff unless explicitly told so
   options = options || {}
 
-  return function(label, fn) {
-    if (T.deepLevel == 0) {
-      latte_suites_args = process.env.LATTE_SUITES && JSON.parse(process.env.LATTE_SUITES)
-      if (latte_suites_args && latte_suites_args.some(preventsSuiteFromRunning)) { return }
-    }
+  return function analyzeOrExec(label, fn) {
+    if (T.deepLevel == 0 && options.runOnly) { T.onlySuites.push(label) }
+    if (T.deepLevel == 0 && T.onlySuites.some(preventsSuiteFromRunning(label))) { return }
 
     return (T.analyzing ? analizeBlock(label, fn) : describeBlock(label, fn))
-
-    function preventsSuiteFromRunning(latte_suite_arg) {
-      if (startsWith(latte_suite_arg, '~')) {
-        if (latte_suite_arg.replace('~', '') == label) {
-          return true
-        }
-      } else if (latte_suite_arg != label) {
-        return true
-      }
-    }
   }
 
   function analizeBlock(label, fn) {
     if (T.deepLevel == 0) {
       var testSuite = describeBlock.bind(this, label, fn)
       T.currentRootDescribeBlock = testSuite
-      T[options.runOnly ? 'runOnlySuites' : 'suites'].push(testSuite) // if `runOnly` is specified (when using `ssuite`), keep track in a separate suite array
+      T.suites.push(testSuite)
       T.isFirstAddedSuite && Meteor.startup(function() { // upon first suite addition, add a callback to startup to run tests
         T.analize() // look at suites structure and prepare the test run (this allows, for example, iit behavior)
         T.run() // run code defined inside suites (describe blocks)
@@ -168,6 +158,7 @@ function descriptionBlock(type, options) {
   }
 
   function describeBlock(label, fn) {
+    if (T.deepLevel == 0 && T.onlySuites.some(preventsSuiteFromRunning(label))) { return }
     T.describeMessages.push(T.message(type, label, T.deepLevel))
     T.deepLevel++
     fn()
@@ -180,6 +171,18 @@ function descriptionBlock(type, options) {
     contextBlocks.forEach(filterFromSameLevel)
     T.deepLevel--
     getCollections().forEach(removeAll)
+  }
+
+  function preventsSuiteFromRunning(label) {
+    return function(onlySuite) {
+      if (startsWith(onlySuite, '~')) {
+        if (onlySuite.replace('~', '') == label) {
+          return true
+        }
+      } else if (onlySuite != label) {
+        return true
+      }
+    }
   }
 
   function sameLevel(obj) {
@@ -224,4 +227,6 @@ beforeAll = T.beforeAll.bind(T)
 beforeEach = T.beforeEach.bind(T)
 afterAll = T.afterAll.bind(T)
 afterEach = T.afterEach.bind(T)
+ddescribe = T.ddescribe.bind(T)
+ccontext = T.ccontext.bind(T)
 
