@@ -1,8 +1,8 @@
-T.suite('iit suite', function() {
+var iitCounter = 0
+var allCounter = 0
+var eachCounter = 0
 
-  var iitCounter = 0
-  var allCounter = 0
-  var eachCounter = 0
+describe('iit behaviour', function() {
 
   context('an `iit` block is defined in some `describe` block', function() {
 
@@ -68,3 +68,4 @@ T.suite('iit suite', function() {
   }
 
 })
+

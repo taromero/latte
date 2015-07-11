@@ -1,7 +1,7 @@
 should()
 
 // Limited set of jasmine generic specs (from http://jasmine.github.io/2.3/introduction.html)
-T.suite(function() {
+describe('jasmine limited suite', function() {
 
   // Introduction
 

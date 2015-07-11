@@ -45,7 +45,6 @@ The aim of this project is to provide a minimal library to just run specs mocha-
 1. `meteor add canotto90:latte`.
 2. `meteor add practicalmeteor:chai`. Latte needs an assetion library, and I've been using ChaiJS.
 2. Write a spec anywhere in a server directory.
-3. The spec should be contained inside a `T.suite` call.
 5. On the command line, run: `RUN_TESTS=1 meteor --once`
 
 ##### Run tests on code change
@@ -62,13 +61,12 @@ As latte doesn't use mirrors, it's just like debugging regular Meteor code. Run 
 
 2 selection options:
 
-- `T.ssuite`.
 - `iit`.
 
 Also, you can select specific/s suites from the command line. To do so, you must put a label for the suites you want to include/exclude. Usage example:
 
 ```
-T.suite('a suite name', function() { ... })
+describe('a suite name', function() { ... })
 ```
 
 From the command line:
@@ -81,4 +79,3 @@ From the command line:
 - Add timeout failures.
 - Add code coverage tool support.
 - Add ability to run only tests that cover the changed section of code (?).
-- Allow specifying suite to run on test command.

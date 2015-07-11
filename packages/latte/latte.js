@@ -1,46 +1,4 @@
 T = {
-  ssuite: function(suiteName, testSuite, options) { // wrapper for `suite` to only run selected suites
-    if (suiteName instanceof Function) {
-      testSuite = suiteName
-      options = testSuite
-      suiteName = ''
-    }
-    options = options || {}
-    T.suite(suiteName, testSuite, _(options).extend({ runOnly: true }))
-  },
-  suite: function(suiteName, testSuite, options) {
-    if (suiteName instanceof Function) {
-      testSuite = suiteName
-      options = testSuite
-      suiteName = ''
-    }
-    options = options || {}
-    if (!process.env.RUN_TESTS) { return } // don't run any test related stuff unless explicitly told so
-
-    latte_suites_args = process.env.LATTE_SUITES && JSON.parse(process.env.LATTE_SUITES)
-    if (latte_suites_args && latte_suites_args.some(preventsSuiteFromRunning)) { return }
-
-    if (options.runOnly) {
-      T.runOnlySuites.push(testSuite) // if `runOnly` is specified (when using `ssuite`), keep track in a separate suite array
-    } else {
-      T.suites.push(testSuite)
-    }
-    T.isFirstAddedSuite && Meteor.startup(function() { // upon first suite addition, add a callback to startup to run tests
-      T.analize() // look at suites structure and prepare the test run (this allows, for example, iit behavior)
-      T.run() // run code defined inside suites (describe blocks)
-    })
-    T.isFirstAddedSuite = false
-
-    function preventsSuiteFromRunning(latte_suite_arg) {
-      if (startsWith(latte_suite_arg, '~')) {
-        if (latte_suite_arg.replace('~', '') == suiteName) {
-          return true
-        }
-      } else if (latte_suite_arg != suiteName) {
-        return true
-      }
-    }
-  },
   analize: function() { // this lets us analyze suite's structure to act accordingly later (allowing, for example, iit blocks to work)
     T.analyzing = true
     T.suites.concat(T.runOnlySuites).forEach(exec)
@@ -82,8 +40,8 @@ T = {
   iit: function(label, fn, options) {
     if (T.analyzing) {
       if (!_(T.onlyRootDescribeBlocksForIit).contains(T.currentRootDescribeBlock)) { // only if we have not already added the root describe
-        // keeping track of the root describe allow as to run all before/after hooks from the beginning.
-        // This also allow to print all labels from the beginning
+        // keeping track of the root describe allows us to run all before/after hooks from the beginning.
+        // This also allows to print all labels from the beginning
         T.onlyRootDescribeBlocksForIit.push(T.currentRootDescribeBlock)
       }
     }
@@ -116,7 +74,7 @@ T = {
       log((msg + ' (/)'.green))                 // log into stdout tests label and result
     } catch(e) {
       log(msg + ' (X)'.red)
-      log(e.stack)
+      log(e.stack || e)
       T.exceptions.push(e)                      // if `T.exceptions` has any item at the en of the test run, exit code will be != 0
     }
   },
@@ -158,6 +116,7 @@ T = {
   describeMessages: [],
   itBlockRunLevel: 0,
   isFirstAddedSuite: true,
+  analyzing: true,
   testingDbUrl: "mongodb://127.0.0.1:3001/meteor_latte"
 }
 
@@ -167,13 +126,40 @@ function exec(fn) { fn() }
 
 function removeAll(collection) { collection.remove({}) }
 
-function descriptionBlock(type) {
+function descriptionBlock(type, options) {
+  if (!process.env.RUN_TESTS) { return } // don't run any test related stuff unless explicitly told so
+  options = options || {}
+
   return function(label, fn) {
-    return T.analyzing ? analizeBlock(label, fn) : describeBlock(label, fn)
+    if (T.deepLevel == 0) {
+      latte_suites_args = process.env.LATTE_SUITES && JSON.parse(process.env.LATTE_SUITES)
+      if (latte_suites_args && latte_suites_args.some(preventsSuiteFromRunning)) { return }
+    }
+
+    return (T.analyzing ? analizeBlock(label, fn) : describeBlock(label, fn))
+
+    function preventsSuiteFromRunning(latte_suite_arg) {
+      if (startsWith(latte_suite_arg, '~')) {
+        if (latte_suite_arg.replace('~', '') == label) {
+          return true
+        }
+      } else if (latte_suite_arg != label) {
+        return true
+      }
+    }
   }
 
   function analizeBlock(label, fn) {
-    if (T.deepLevel == 0) { T.currentRootDescribeBlock = describeBlock.bind(this, label, fn) }
+    if (T.deepLevel == 0) {
+      var testSuite = describeBlock.bind(this, label, fn)
+      T.currentRootDescribeBlock = testSuite
+      T[options.runOnly ? 'runOnlySuites' : 'suites'].push(testSuite) // if `runOnly` is specified (when using `ssuite`), keep track in a separate suite array
+      T.isFirstAddedSuite && Meteor.startup(function() { // upon first suite addition, add a callback to startup to run tests
+        T.analize() // look at suites structure and prepare the test run (this allows, for example, iit behavior)
+        T.run() // run code defined inside suites (describe blocks)
+      })
+      T.isFirstAddedSuite = false
+    }
     T.deepLevel++
     fn()
     T.deepLevel--
