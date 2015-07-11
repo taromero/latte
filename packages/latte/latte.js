@@ -95,7 +95,9 @@ T = {
     T.afterEachBlocks.push({ fn: fn, deepLevel: T.deepLevel })
   },
   message: function(type, label, deepLevel) { // pretty print messages for console report
-    var prefix = _.range(deepLevel).reduce(function(a) { return a + '  '}, '')
+    var prefix = ''
+    if (T.deepLevel == 0) { prefix += '~~~~~~~~'.grey + '\n' }
+    prefix += _.range(deepLevel).reduce(function(a) { return a + '  '}, '')
     return prefix + type.magenta.bold + ' ' + label.cyan
   },
   ignore: function() {},
