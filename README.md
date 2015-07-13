@@ -3,15 +3,10 @@
 [![Build Status](https://travis-ci.org/taromero/latte.svg?branch=master)](https://travis-ci.org/taromero/latte)
 
 ![](https://raw.githubusercontent.com/taromero/latte/master/readme_images/latte.png)
-![](https://raw.githubusercontent.com/taromero/latte/master/readme_images/latte2.png)
 
-#### What it is
+#### What
 
 Testing framework to write mocha-esque specs, without the need of using Velocity.
-
-#### What it is not
-
-This is not intended as a replacement to Velocity. It lacks some important Velocity features (for example running in parallel while you code, or having an HTML reporter).
 
 #### Motivation
 
@@ -33,13 +28,6 @@ The aim of this project is to provide a minimal library to just run specs mocha-
 - Simple (yet nice?) `console based report`.
 - It runs inside `Meteor's context` (you can user global variables, such as Meteor collections).
 
-#### Gotchas
-
-- `afterAll` and `afterEach` must be declared before `it` blocks in each `describe` or `context` block.
-- Cannot run assertions inside `before` or `after` blocks.
-- Initially designed to work only on server side.
-- If the internet connection is flacky, it might take some seconds to end the Meteor process (this is due to some Meteor's internals).
-
 #### How to use
 
 1. `meteor add canotto90:latte`.
@@ -51,7 +39,7 @@ The aim of this project is to provide a minimal library to just run specs mocha-
 
 Use `RUN_TESTS=cont meteor` to run tests automatically when files change. `cont` tells Latte not to end the Meteor process. Ideally, not using the `--once` argument should be enough to allow continuous testing, but doesn't seem to be a way to detect which arguments were used when running meteor (like we can in simple nodejs apps).
 
-Latte uses testing's DB when running tests, and switches back to develop's db after running tests.
+Latte uses testing's DB when running tests, and *switches back to develop's db* after running tests.
 
 ##### How to debug tests
 
@@ -61,7 +49,7 @@ As latte doesn't use mirrors, it's just like debugging regular Meteor code. Run 
 
 2 selection options:
 
-- `ddescribe`. This can only be used on unnested describe blocks, at the moment.
+- `ddescribe`. This can only be used on unnested describe blocks at the moment.
 - `iit`. This can be used on any `it` block.
 
 Also, you can select specific/s suites from the command line. To do so, you must put a label for the suites you want to include/exclude. Usage example:
@@ -74,6 +62,13 @@ From the command line:
 
   * run only a list a suites: `RUN_TESTS=1 LATTE_SUITES='["a suite name"]' meteor --once`.
   * run all but a list a suites: `RUN_TESTS=1 LATTE_SUITES='["~a suite name"]' meteor --once`.
+
+#### Gotchas
+
+- `afterAll` and `afterEach` must be declared before `it` blocks in each `describe` or `context` block.
+- Cannot run assertions inside `before` or `after` blocks.
+- Initially designed to work only on server side.
+- If the internet connection is flacky, it might take some seconds to end the Meteor process (this is due to some Meteor's internals).
 
 #### Known TODOS
 
