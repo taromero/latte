@@ -11,10 +11,6 @@ ddescribe('ddescribe should take precedence over iit blocks', function() {
 
   })
 
-  T.postRunCallback = function() {
-    if (ddescribeCounter != 1) { throw 'some assertion failed to exec. ddescribeCounter = ' + ddescribeCounter }
-  }
-
 })
 
 describe('describe block containing an iit block, in presence of a ddescribe block', function() {
@@ -24,3 +20,11 @@ describe('describe block containing an iit block, in presence of a ddescribe blo
   })
 
 })
+
+T.postRunCallbacks.push({
+  label: 'ddescribe should take precedence over iit blocks',
+  fn: function() {
+    if (ddescribeCounter != 1) { throw 'ddescribe_iit_spec: some assertion failed to exec. ddescribeCounter = ' + ddescribeCounter }
+  }
+})
+

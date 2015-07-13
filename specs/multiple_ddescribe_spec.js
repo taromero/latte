@@ -8,9 +8,6 @@ ddescribe('first ddescribe', function() {
     ddescribeCounter1++
   })
 
-  T.postRunCallback = function() {
-    if (ddescribeCounter1 != 1) { throw 'some assertion failed to exec. ddescribeCounter = ' + ddescribeCounter }
-  }
 
 })
 
@@ -21,9 +18,20 @@ ddescribe('second ddescribe', function() {
     ddescribeCounter2++
   })
 
-  T.postRunCallback = function() {
-    if (ddescribeCounter2 != 1) { throw 'some assertion failed to exec. ddescribeCounter = ' + ddescribeCounter }
-  }
 
+})
+
+T.postRunCallbacks.push({
+  label: 'first ddescribe',
+  fn: function() {
+    if (ddescribeCounter1 != 1) { throw 'multiple_ddescribe_spec: some assertion failed to exec. ddescribeCounter = ' + ddescribeCounter1 }
+  }
+})
+
+T.postRunCallbacks.push({
+  label: 'second ddescribe',
+  fn: function() {
+    if (ddescribeCounter2 != 1) { throw 'multiple_ddescribe_spec: some assertion failed to exec. ddescribeCounter = ' + ddescribeCounter2 }
+  }
 })
 

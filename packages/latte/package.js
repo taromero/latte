@@ -22,4 +22,5 @@ Package.onUse(function(api) {
   api.export('afterEach', 'server')
   api.export('ddescribe', 'server')
   api.export('ccontext', 'server')
+  api.export('postRunCallback', 'server')
 })

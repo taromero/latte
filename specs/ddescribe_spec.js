@@ -14,10 +14,6 @@ ddescribe('if there is a ddescribe block', function() {
 
   })
 
-  T.postRunCallback = function() {
-    if (ddescribeCounter != 2) { throw 'some assertion failed to exec. ddescribeCounter == ' + ddescribeCounter }
-  }
-
 })
 
 describe('unnested describe blocks in presence of a ddescribe block', function() {
@@ -35,3 +31,11 @@ describe('unnested describe blocks in presence of a ddescribe block', function()
   })
 
 })
+
+T.postRunCallbacks.push({
+  label: 'if there is a ddescribe block',
+  fn: function() {
+    if (ddescribeCounter != 2) { throw 'ddescribe_spec: some assertion failed to exec. ddescribeCounter == ' + ddescribeCounter }
+  }
+})
+

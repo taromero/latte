@@ -17,7 +17,11 @@ T = {
     log('\n' + (T.itCount + ' tests: ').yellow + (T.successfulItCount + ' passing, ').green + (T.itCount - T.successfulItCount + ' failing.').red)
 
     getCollections().forEach(pointBackToDevelopDB) // point collections back to development's DB
-    T.postRunCallback() // allow to run a callback when testing has finished (before possibly ending the process)
+    T.postRunCallbacks.forEach(function(obj) { // allow to run a callback when testing has finished (before possibly ending the process)
+      if (!preventsSuiteFromRunning(obj.label)) {
+        obj.fn()
+      }
+    })
 
     process.env.RUN_TESTS != 'cont' && process.exit(T.exceptions.length) // end the process unless option is specified
 
@@ -100,7 +104,7 @@ T = {
   },
   ignore: function() {},
   suites: [],
-  postRunCallback: function() {},
+  postRunCallbacks: [],
   describeBlocks: [],
   exceptions: [],
   deepLevel: 0,
@@ -122,6 +126,9 @@ T = {
 
 if (process.env.LATTE_SUITES) {
   T.onlySuites = T.onlySuites.concat(JSON.parse(process.env.LATTE_SUITES))
+  if (T.onlySuites.length) {
+    T.onlySuitesAsUserParams = true // if user specifies some suites to run, only run those
+  }
 }
 
 function fns(obj) { return obj.fn }
@@ -135,8 +142,8 @@ function descriptionBlock(type, options) {
   options = options || {}
 
   return function analyzeOrExec(label, fn) {
-    if (T.deepLevel == 0 && options.runOnly && !excludedSuite(T.onlySuites, label)) { T.onlySuites.push(label) }
-    if (T.deepLevel == 0 && preventsSuiteFromRunning(T.onlySuites, label)) { return }
+    if (T.deepLevel == 0 && options.runOnly && !excludedSuite(T.onlySuites, label) && !T.onlySuitesAsUserParams) { T.onlySuites.push(label) }
+    if (T.deepLevel == 0 && preventsSuiteFromRunning(label)) { return }
 
     return (T.analyzing ? analizeBlock(label, fn) : describeBlock(label, fn))
   }
@@ -158,7 +165,7 @@ function descriptionBlock(type, options) {
   }
 
   function describeBlock(label, fn) {
-    if (T.deepLevel == 0 && preventsSuiteFromRunning(T.onlySuites, label)) { return }
+    if (T.deepLevel == 0 && preventsSuiteFromRunning(label)) { return }
     T.describeMessages.push(T.message(type, label, T.deepLevel))
     T.deepLevel++
     fn()
@@ -173,31 +180,6 @@ function descriptionBlock(type, options) {
     getCollections().forEach(removeAll)
   }
 
-  function preventsSuiteFromRunning(onlySuites, label) {
-    return excludedSuite(onlySuites, label) || (onlySuites.some(isInclusionOnly) && !onlySuites.some(included))
-
-
-    function isInclusionOnly(onlySuite) {
-      return !startsWith(onlySuite, '~')
-    }
-
-    function included(onlySuite) {
-      return onlySuite == label
-    }
-  }
-
-  function excludedSuite(onlySuites, label) {
-    return onlySuites.some(excluded)
-
-    function excluded(onlySuite) {
-      if (startsWith(onlySuite, '~')) {
-        if (onlySuite.replace('~', '') == label) {
-          return true
-        }
-      }
-    }
-  }
-
   function sameLevel(obj) {
     return obj.deepLevel == T.deepLevel
   }
@@ -210,6 +192,31 @@ function descriptionBlock(type, options) {
     }
   }
 
+}
+
+function preventsSuiteFromRunning(label) {
+  return excludedSuite(label) || (T.onlySuites.some(isInclusionOnly) && !T.onlySuites.some(included))
+
+
+  function isInclusionOnly(onlySuite) {
+    return !startsWith(onlySuite, '~')
+  }
+
+  function included(onlySuite) {
+    return onlySuite == label
+  }
+}
+
+function excludedSuite(label) {
+  return T.onlySuites.some(excluded)
+
+  function excluded(onlySuite) {
+    if (startsWith(onlySuite, '~')) {
+      if (onlySuite.replace('~', '') == label) {
+        return true
+      }
+    }
+  }
 }
 
 function log(obj) {
