@@ -2,11 +2,9 @@ SampleCollection = new Mongo.Collection('sample_collections')
 SampleCollection.remove({})
 SampleCollection.insert({})
 
-should()
-
 SampleCollection.find().count().should.eq(1)
 
-ddescribe('latte should use a separate DB from develop', function() {
+describe('latte should use a separate DB from develop', function() {
 
   it('should not see the entity created on develop\'s DB', function() {
     SampleCollection.find().count().should.eq(0)

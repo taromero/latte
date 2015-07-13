@@ -135,8 +135,8 @@ function descriptionBlock(type, options) {
   options = options || {}
 
   return function analyzeOrExec(label, fn) {
-    if (T.deepLevel == 0 && options.runOnly) { T.onlySuites.push(label) }
-    if (T.deepLevel == 0 && T.onlySuites.some(preventsSuiteFromRunning(label))) { return }
+    if (T.deepLevel == 0 && options.runOnly && !excludedSuite(T.onlySuites, label)) { T.onlySuites.push(label) }
+    if (T.deepLevel == 0 && preventsSuiteFromRunning(T.onlySuites, label)) { return }
 
     return (T.analyzing ? analizeBlock(label, fn) : describeBlock(label, fn))
   }
@@ -158,7 +158,7 @@ function descriptionBlock(type, options) {
   }
 
   function describeBlock(label, fn) {
-    if (T.deepLevel == 0 && T.onlySuites.some(preventsSuiteFromRunning(label))) { return }
+    if (T.deepLevel == 0 && preventsSuiteFromRunning(T.onlySuites, label)) { return }
     T.describeMessages.push(T.message(type, label, T.deepLevel))
     T.deepLevel++
     fn()
@@ -173,14 +173,27 @@ function descriptionBlock(type, options) {
     getCollections().forEach(removeAll)
   }
 
-  function preventsSuiteFromRunning(label) {
-    return function(onlySuite) {
+  function preventsSuiteFromRunning(onlySuites, label) {
+    return excludedSuite(onlySuites, label) || (onlySuites.some(isInclusionOnly) && !onlySuites.some(included))
+
+
+    function isInclusionOnly(onlySuite) {
+      return !startsWith(onlySuite, '~')
+    }
+
+    function included(onlySuite) {
+      return onlySuite == label
+    }
+  }
+
+  function excludedSuite(onlySuites, label) {
+    return onlySuites.some(excluded)
+
+    function excluded(onlySuite) {
       if (startsWith(onlySuite, '~')) {
         if (onlySuite.replace('~', '') == label) {
           return true
         }
-      } else if (onlySuite != label) {
-        return true
       }
     }
   }

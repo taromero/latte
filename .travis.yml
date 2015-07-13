@@ -2,7 +2,9 @@ sudo: required
 language: node_js
 env:
   - SUITES='["iit behaviour"]'
-  - SUITES='["~iit behaviour"]'
+  - SUITES='["if there is a ddescribe block"]'
+  - SUITES='["ddescribe should take precedence over iit blocks"]'
+  - SUITES='["~iit behaviour", "~if there is a ddescribe block", "~ddescribe should take precedence over iit blocks", "~describe block containing an iit block, in presence of a ddescribe block", "~unnested describe blocks in presence of a ddescribe block", "~first ddescribe", "~second ddescribe"]'
 before_install:
   - curl https://install.meteor.com | /bin/sh
 script:

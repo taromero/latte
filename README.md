@@ -7,7 +7,7 @@
 
 #### What it is
 
-Testing framework to write mocha-like specs, without the need of using Velocity.
+Testing framework to write mocha-esque specs, without the need of using Velocity.
 
 #### What it is not
 
@@ -15,7 +15,7 @@ This is not intended as a replacement to Velocity. It lacks some important Veloc
 
 #### Motivation
 
-Velocity's goal is complex, and I've experienced some issues while working with it. I agree that Velocity is a great idea, but I still feel it a bit unstable. Also, some features can be unnecessary overhead from **some** projects.
+Velocity's goal is complex, and I've experienced some issues while working with it. I agree that Velocity is a great idea, but I still feel it a bit unstable. Also, some features can be unnecessary overhead for **some** projects.
 
 The aim of this project is to provide a minimal library to just run specs mocha-style, upon running a command. No reactive feedback of test whie coding, no mirrors, no common platform for different testing frameworks (which are all good things). Simplicity. You can only run unit and integration test currenty.
 
@@ -61,7 +61,8 @@ As latte doesn't use mirrors, it's just like debugging regular Meteor code. Run 
 
 2 selection options:
 
-- `iit`.
+- `ddescribe`. This can only be used on unnested describe blocks, at the moment.
+- `iit`. This can be used on any `it` block.
 
 Also, you can select specific/s suites from the command line. To do so, you must put a label for the suites you want to include/exclude. Usage example:
 
