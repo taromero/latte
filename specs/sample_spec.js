@@ -2,7 +2,7 @@ Subjects = new Mongo.Collection('subjects')
 
 describe('Subject seeding', function() {
 
-  context('there isn\'t any subjects in the DB', function() {
+  context('there aren\'t any subjects in the DB', function() {
 
     beforeEach(function() {
       Seed.subjects()
