@@ -66,9 +66,9 @@ describe('iit behaviour', function () {
 T.postRunCallbacks.push({
   label: 'iit behaviour',
   fn: function () {
-    if (iitCounter !== 3) { throw 'iit_spec: some assertion failed to exec. iitCounter == ' + iitCounter }
-    if (allCounter !== 4) { throw 'iit_spec: some before/afterAll block failed to exec. allCounter == ' + allCounter }
-    if (eachCounter !== 6) { throw 'iit_spec: some before/afterEach block failed to exec. eachCounter == ' + eachCounter }
+    if (iitCounter !== 3) { throw new Error('some assertion failed to exec. iitCounter == ' + iitCounter) }
+    if (allCounter !== 4) { throw new Error('some before/afterAll block failed to exec. allCounter == ' + allCounter) }
+    if (eachCounter !== 6) { throw new Error('some before/afterEach block failed to exec. eachCounter == ' + eachCounter) }
   }
 })
 
