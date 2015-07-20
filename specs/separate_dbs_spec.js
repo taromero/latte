@@ -1,22 +1,22 @@
-SampleCollection = new Mongo.Collection('sample_collections')
+var SampleCollection = new Mongo.Collection('sample_collections')
 SampleCollection.remove({})
 SampleCollection.insert({})
 
 SampleCollection.find().count().should.eq(1)
 
-describe('latte should use a separate DB from develop', function() {
+describe('latte should use a separate DB from develop', function () {
 
-  it('should not see the entity created on develop\'s DB', function() {
+  it('should not see the entity created on develop\'s DB', function () {
     SampleCollection.find().count().should.eq(0)
   })
 
-  context('creating a new entity', function() {
+  context('creating a new entity', function () {
 
-    beforeAll(function() {
+    beforeAll(function () {
       SampleCollection.insert({ env: 'test' })
     })
 
-    it('should see the entity created on test\'s DB', function() {
+    it('should see the entity created on test\'s DB', function () {
       SampleCollection.find().count().should.eq(1)
     })
 

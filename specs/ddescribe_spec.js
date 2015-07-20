@@ -1,14 +1,14 @@
 var ddescribeCounter = 0
 
-ddescribe('if there is a ddescribe block', function() {
+ddescribe('if there is a ddescribe block', function () {
 
-  it('should run assertions', function() {
+  it('should run assertions', function () {
     ddescribeCounter++
   })
 
-  describe('on nested blocks', function() {
+  describe('on nested blocks', function () {
 
-    it('should run assertions too', function() {
+    it('should run assertions too', function () {
       ddescribeCounter++
     })
 
@@ -16,15 +16,15 @@ ddescribe('if there is a ddescribe block', function() {
 
 })
 
-describe('unnested describe blocks in presence of a ddescribe block', function() {
+describe('unnested describe blocks in presence of a ddescribe block', function () {
 
-  it('should not run assertions', function() {
+  it('should not run assertions', function () {
     'a'.should.eq('b')
   })
 
-  describe('on nested blocks', function() {
+  describe('on nested blocks', function () {
 
-    it('should not run assertions either', function() {
+    it('should not run assertions either', function () {
       'a'.should.eq('b')
     })
 
@@ -34,8 +34,8 @@ describe('unnested describe blocks in presence of a ddescribe block', function()
 
 T.postRunCallbacks.push({
   label: 'if there is a ddescribe block',
-  fn: function() {
-    if (ddescribeCounter != 2) { throw 'ddescribe_spec: some assertion failed to exec. ddescribeCounter == ' + ddescribeCounter }
+  fn: function () {
+    if (ddescribeCounter !== 2) { throw 'ddescribe_spec: some assertion failed to exec. ddescribeCounter == ' + ddescribeCounter }
   }
 })
 
