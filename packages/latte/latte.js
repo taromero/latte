@@ -17,7 +17,7 @@ T = { // eslint-disable-line
     log('\n' + (T.itCount + ' tests: ').yellow + (T.successfulItCount + ' passing, ').green + (T.itCount - T.successfulItCount + ' failing.').red)
 
     getCollections().forEach(pointBackToDevelopDB) // point collections back to development's DB
-    T.postRunCallbacks.filter(preventsSuiteFromRunning).map(fns).forEach(exec) // allow to run a callback when testing has finished (before possibly ending the process)
+    _(T.postRunCallbacks).reject(preventsSuiteFromRunning).map(fns).forEach(exec) // allow to run a callback when testing has finished (before possibly ending the process)
 
     process.env.RUN_TESTS !== 'cont' && process.exit(T.exceptions.length) // end the process unless option is specified
 
