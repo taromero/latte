@@ -1,4 +1,4 @@
-var SampleCollection = new Mongo.Collection('sample_collections')
+global.SampleCollection = new Mongo.Collection('sample_collections')
 SampleCollection.remove({})
 SampleCollection.insert({})
 

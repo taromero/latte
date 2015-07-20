@@ -1,4 +1,4 @@
-var DBCleanupCollection = new Mongo.Collection('db_cleanups_collection')
+global.DBCleanupCollection = new Mongo.Collection('db_cleanups_collection')
 
 describe('database cleanup between describe blocks', function () {
 

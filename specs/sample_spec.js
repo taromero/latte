@@ -1,4 +1,4 @@
-var Subjects = new Mongo.Collection('subjects')
+global.Subjects = new Mongo.Collection('subjects')
 
 describe('Subject seeding', function () {
 
