@@ -7,5 +7,7 @@ env:
   - SUITES='["~iit behaviour", "~if there is a ddescribe block", "~ddescribe should take precedence over iit blocks", "~describe block containing an iit block, in presence of a ddescribe block", "~unnested describe blocks in presence of a ddescribe block", "~first ddescribe", "~second ddescribe"]'
 before_install:
   - curl https://install.meteor.com | /bin/sh
+  - npm install standard -g
 script:
   - "RUN_TESTS=true LATTE_SUITES=$SUITES meteor --once"
+  - standard
