@@ -12,4 +12,5 @@ before_install:
 script:
   - standard
   - sh run_tests.sh
-  - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && printf $LI | meteor login && meteor publish || false'
+  - '[ "${TRAVIS_PULL_REQUEST}" != "false" ] && bash check_for_new_version_number.bash'
+  - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && printf $LI | meteor login && meteor publish || exit 0'
