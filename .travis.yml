@@ -1,13 +1,15 @@
 sudo: required
 language: node_js
+branches:
+  only:
+    - master
 env:
-  - SUITES='["iit behaviour"]'
-  - SUITES='["if there is a ddescribe block"]'
-  - SUITES='["ddescribe should take precedence over iit blocks"]'
-  - SUITES='["~iit behaviour", "~if there is a ddescribe block", "~ddescribe should take precedence over iit blocks", "~describe block containing an iit block, in presence of a ddescribe block", "~unnested describe blocks in presence of a ddescribe block", "~first ddescribe", "~second ddescribe"]'
+  global:
+    secure: m2hew72lHbD+WUZSTipuo6O9jeY4pEPOMpz3kkiAwZZ3h1vHf8vBOH+Qr79w6FEN3IpueGj/MFeq8abCg7T3FbTd3J4D9zOm9euvwrkpADsg/kqnuDYvJlU5PUhwlQZMnDHOPpTCRQNcxfjF8SSr0vW0xvXsf0MW6ldAt8qPNUba4UCnT+18sLF1E0eNVBmXjKAFhCyknVhUfe+XN4sD/EsV25FNzJsYvyD+qSQo7TRspeHvQihHWMQkJZPi2s2EyFeXFqw48SOrCZbSorV6K8RUZJ1Lk7zP1oSPBrbulKKQpoCVsrT381kmU0K6pj939PrZMtF0IITzzk+7aITq/ADj0QlSTjEZQnKxJnJjMdTjB3ftKXqrRjD+7I3pzHJDIukrMIupB3TmtSE0pRYblAB9fDngMIxLHxPQ3qdtpxa3hkSW0IG1TQltxDt/baEyy9tStrhM1pXMeXnNEyVCRRpKBGMTlRnGo69VfBYhOGe6q+yWhCKqY/sgLLV13vHx3DVlDJwXjASNSkrkmMj8gVWyz4p6bAJewW9vRQK4KPNyaWRRpI26/CuXOJKctayve0EF26SxqhdJmy2MQnDcfS7O0aOdryoGjuGyl4EjluhrP2TMQoBej7c/8605zftSIAow631Jgi7qfR7t765xqHC0CBLbWjAVU0I4lPHQ+Ck=
 before_install:
   - curl https://install.meteor.com | /bin/sh
   - npm install standard -g
 script:
-  - "RUN_TESTS=true LATTE_SUITES=$SUITES meteor --once"
   - standard
+  - sh run_tests.sh
+  - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && printf $LI | meteor login && meteor publish || false'
