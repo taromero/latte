@@ -6,7 +6,7 @@ Package.describe({
   documentation: '../../README.md'
 })
 
-Package.onUse(function(api) {
+Package.onUse(function (api) {
   api.versionsFrom('1.1.0.1')
   api.use('mongo@1.1.0', 'server')
   api.use('nooitaf:colors@0.0.2')

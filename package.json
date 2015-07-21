@@ -1,0 +1,11 @@
+{
+  "standard": {
+    "global": [
+      "Mongo", "Meteor", "Package",
+      "SampleCollection", "DBCleanupCollection", "Subjects",
+      "describe", "ddescribe", "context", "ccontext", "it", "iit",
+      "beforeAll", "beforeEach", "T", "afterAll", "afterEach",
+      "expect", "should", "_"
+    ]
+  }
+}

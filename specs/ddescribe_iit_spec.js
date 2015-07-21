@@ -1,10 +1,10 @@
 var ddescribeCounter = 0
 
-ddescribe('ddescribe should take precedence over iit blocks', function() {
+ddescribe('ddescribe should take precedence over iit blocks', function () {
 
-  context('`iit` block declared outside of `ddescribe`', function() {
+  context('`iit` block declared outside of `ddescribe`', function () {
 
-    it('should run assertions', function() {
+    it('should run assertions', function () {
       'a'.should.eq('a')
       ddescribeCounter++
     })
@@ -13,9 +13,9 @@ ddescribe('ddescribe should take precedence over iit blocks', function() {
 
 })
 
-describe('describe block containing an iit block, in presence of a ddescribe block', function() {
+describe('describe block containing an iit block, in presence of a ddescribe block', function () {
 
-  iit('should not run the `iit` assertion', function() {
+  iit('should not run the `iit` assertion', function () {
     'a'.should.eq('b')
   })
 
@@ -23,8 +23,8 @@ describe('describe block containing an iit block, in presence of a ddescribe blo
 
 T.postRunCallbacks.push({
   label: 'ddescribe should take precedence over iit blocks',
-  fn: function() {
-    if (ddescribeCounter != 1) { throw 'ddescribe_iit_spec: some assertion failed to exec. ddescribeCounter = ' + ddescribeCounter }
+  fn: function () {
+    if (ddescribeCounter !== 1) { throw new Error('some assertion failed to exec. ddescribeCounter = ' + ddescribeCounter) }
   }
 })
 
