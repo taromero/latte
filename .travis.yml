@@ -9,8 +9,9 @@ env:
 before_install:
   - curl https://install.meteor.com | /bin/sh
   - npm install standard -g
+  - npm install snazzy -g
 script:
-  - standard
+  - snazzy
   - sh run_tests.sh
-  - '[ "${TRAVIS_PULL_REQUEST}" != "false" ] && bash check_for_new_version_number.bash'
-  - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && printf $LI | meteor login && meteor publish || exit 0'
+  - bash check_for_new_version_number.bash
+  - bash publish.sh
