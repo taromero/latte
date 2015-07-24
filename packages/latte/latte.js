@@ -134,7 +134,7 @@ function exec (fn) { fn() }
 function removeAll (collection) { collection.remove({}) }
 
 function descriptionBlock (type, options) {
-  if (!process.env.RUN_TESTS) { return } // don't run any test related stuff unless explicitly told so
+  if (!process.env.RUN_TESTS) { return function () {} } // don't run any test related stuff unless explicitly told so
   options = options || {}
 
   return function analyzeOrExec (label, fn) {
