@@ -9,7 +9,7 @@ describe('Subject seeding', function () {
     })
 
     it('should create new subjects', function () {
-      Subjects.find().count().should.be.gt(0)
+      Subjects.find().count().should.be.gt(1)
     })
 
   })
