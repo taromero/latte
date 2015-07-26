@@ -1,3 +1,5 @@
+var figures = Npm.require('figures')
+
 T = { // eslint-disable-line
   analize: function () { // this lets us analyze suite's structure to act accordingly later (allowing, for example, iit blocks to work)
     T.analyzing = true
@@ -69,9 +71,9 @@ T = { // eslint-disable-line
       fn()                                      // run assertions in it block
       T.afterEachBlocks.map(fns).forEach(exec)  // run afterEach blocks
       T.successfulItCount++                     // count number of successful tests, for reports
-      log((msg + ' (/)'.green))                 // log into stdout tests label and result
+      log((msg + ' ' + figures.tick.green))                 // log into stdout tests label and result
     } catch(e) {
-      log(msg + ' (X)'.red)
+      log(msg + ' ' + figures.cross.red)
       log(e.stack || e)
       T.exceptions.push(e)                      // if `T.exceptions` has any item at the en of the test run, exit code will be != 0
     }

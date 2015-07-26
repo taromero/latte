@@ -5,7 +5,8 @@
       "SampleCollection", "DBCleanupCollection", "Subjects",
       "describe", "ddescribe", "context", "ccontext", "it", "iit",
       "beforeAll", "beforeEach", "T", "afterAll", "afterEach",
-      "expect", "should", "_"
+      "expect", "should", "_",
+      "figures", "Npm"
     ]
   }
 }

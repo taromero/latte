@@ -4,6 +4,7 @@
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://github.com/feross/standard)
 
 ![](https://raw.githubusercontent.com/taromero/latte/master/readme_images/latte.png)
+![](https://raw.githubusercontent.com/taromero/latte/master/readme_images/latte_debugging.png)
 
 #### What
 
@@ -13,12 +14,12 @@ Testing framework to write mocha-esque specs, without the need of using Velocity
 
 Velocity's goal is complex, and I've experienced some issues while working with it. I agree that Velocity is a great idea, but I still feel it a bit unstable. Also, some features can be unnecessary overhead for **some** projects.
 
-The aim of this project is to provide a minimal library to just run specs mocha-style, upon running a command. No reactive feedback of test whie coding, no mirrors, no common platform for different testing frameworks (which are all good things). Simplicity. You can only run unit and integration test currenty.
+The aim of this project is to provide a minimal library to just run specs mocha-style, upon running a command. No reactive feedback of test while coding, no mirrors, no common platform for different testing frameworks (which are all good things). Simplicity. You can only run unit and integration test currently.
 
 #### How to use
 
 1. `meteor add canotto90:latte`.
-2. `meteor add practicalmeteor:chai`. Latte needs an assetion library, and I've been using ChaiJS.
+2. `meteor add practicalmeteor:chai`. Latte needs an assertion library, and I've been using ChaiJS.
 2. Write a spec anywhere in a server directory.
 5. On the command line, run: `RUN_TESTS=1 meteor --once`
 
@@ -77,10 +78,5 @@ From the command line:
 - `afterAll` and `afterEach` must be declared before `it` blocks in each `describe` or `context` block.
 - Cannot run assertions inside `before` or `after` blocks.
 - Initially designed to work only on server side.
-- If the internet connection is flacky, it might take some seconds to end the Meteor process (this is due to some Meteor's internals).
+- If the internet connection is flaky, it might take some seconds to end the Meteor process (this is due to some Meteor's internals).
 
-#### Known TODOS
-
-- Add timeout failures.
-- Add code coverage tool support.
-- Add ability to run only tests that cover the changed section of code (?).
