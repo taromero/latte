@@ -4,6 +4,7 @@
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://github.com/feross/standard)
 
 ![](https://raw.githubusercontent.com/taromero/latte/master/readme_images/latte.png)
+![](https://raw.githubusercontent.com/taromero/latte/master/readme_images/latte_debugging.png)
 
 #### What
 

@@ -1,4 +1,4 @@
-figures = Npm.require('figures')
+var figures = Npm.require('figures')
 
 T = { // eslint-disable-line
   analize: function () { // this lets us analyze suite's structure to act accordingly later (allowing, for example, iit blocks to work)
