@@ -119,7 +119,8 @@ T = { // eslint-disable-line
   isFirstAddedSuite: true,
   analyzing: true,
   onlySuites: [],
-  testingDbUrl: 'mongodb://127.0.0.1:3001/meteor_latte'
+  // testingDbUrl: 'mongodb://127.0.0.1:3001/meteor_latte'
+  testingDbUrl: 'mongodb://localhost:27017/test' 
 }
 
 if (process.env.LATTE_SUITES) {
