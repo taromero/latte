@@ -1,13 +1,13 @@
 var figures = Npm.require('figures')
 
 T = { // eslint-disable-line
-  analize: function () { // this lets us analyze suite's structure to act accordingly later (allowing, for example, iit blocks to work)
-    T.analyzing = true
-    T.suites.forEach(exec)
-    T.analyzing = false
-  },
-  run: function () {
+  run: function (onlySuites) {
     if (!process.env.RUN_TESTS) { return }
+    if (onlySuites) { T.onlySuites = onlySuites }
+    T.preProcess = false
+    T.describeBlocks.forEach(exec)
+    T.analyzing = false
+    T.needToBoot = false
 
     var testingDB = new global.MongoInternals.RemoteCollectionDriver(T.testingDbUrl) // create a driver pointing to testing's DB
     getCollections().forEach(pointToTestingDB) // point collections to testing's DB
@@ -22,6 +22,12 @@ T = { // eslint-disable-line
     _(T.postRunCallbacks).reject(preventsSuiteFromRunning).map(fns).forEach(exec) // allow to run a callback when testing has finished (before possibly ending the process)
 
     process.env.RUN_TESTS !== 'cont' && process.exit(T.exceptions.length) // end the process unless option is specified
+
+    T.itCount = 0
+    T.successfulItCount = 0
+    T.analyzing = true
+    T.needToBoot = true
+    T.suites = []
 
     function pointToTestingDB (collection) {
       collection.latte_original_driver = collection._driver // keep track of original driver, to point back to development's DB once tests have finished
@@ -78,21 +84,11 @@ T = { // eslint-disable-line
       T.exceptions.push(e)                      // if `T.exceptions` has any item at the en of the test run, exit code will be != 0
     }
   },
-  beforeAll: function (fn) {
-    if (T.analyzing) { return }
-    T.beforeAllBlocks.push({ fn: fn, deepLevel: T.deepLevel })  // keep track of beforeAll blocks, to run them later
-  },
-  beforeEach: function (fn) {
-    if (T.analyzing) { return }
-    T.beforeEachBlocks.push({ fn: fn, deepLevel: T.deepLevel })
-  },
-  afterAll: function (fn) {
-    if (T.analyzing) { return }
-    T.afterAllBlocks.push({ fn: fn, deepLevel: T.deepLevel })
-  },
-  afterEach: function (fn) {
-    if (T.analyzing) { return }
-    T.afterEachBlocks.push({ fn: fn, deepLevel: T.deepLevel })
+  defineHook: function (type) {
+    return function (fn) {
+      if (T.analyzing) { return }
+      T[type + 'Blocks'].push({ fn: fn, deepLevel: T.deepLevel })
+    }
   },
   message: function (type, label, deepLevel) { // pretty print messages for console report
     var prefix = ''
@@ -116,8 +112,9 @@ T = { // eslint-disable-line
   onlyRootDescribeBlocksForIit: [],
   describeMessages: [],
   itBlockRunLevel: 0,
-  isFirstAddedSuite: true,
+  needToBoot: true,
   analyzing: true,
+  preProcess: true,
   onlySuites: [],
   testingDbUrl: 'mongodb://127.0.0.1:3001/meteor_latte'
 }
@@ -139,32 +136,18 @@ function descriptionBlock (type, options) {
   if (!process.env.RUN_TESTS) { return function () {} } // don't run any test related stuff unless explicitly told so
   options = options || {}
 
-  return function analyzeOrExec (label, fn) {
+  return function describeBlock (label, fn) {
+    T.needToBoot && Meteor.startup(T.run)
+    T.needToBoot = false
+    if (T.preProcess) { return T.describeBlocks.push(describeBlock.bind(this, label, fn)) }
     if (T.deepLevel === 0 && options.runOnly && !excludedSuite(T.onlySuites, label) && !T.onlySuitesAsUserParams) { T.onlySuites.push(label) }
     if (T.deepLevel === 0 && preventsSuiteFromRunning(label)) { return }
-
-    return (T.analyzing ? analizeBlock(label, fn) : describeBlock(label, fn))
-  }
-
-  function analizeBlock (label, fn) {
-    if (T.deepLevel === 0) {
+    if (T.analyzing && T.deepLevel === 0) {
       var testSuite = describeBlock.bind(this, label, fn)
       T.currentRootDescribeBlock = testSuite
       T.suites.push(testSuite)
-      T.isFirstAddedSuite && Meteor.startup(function () { // upon first suite addition, add a callback to startup to run tests
-        T.analize() // look at suites structure and prepare the test run (this allows, for example, iit behavior)
-        T.run() // run code defined inside suites (describe blocks)
-      })
-      T.isFirstAddedSuite = false
     }
-    T.deepLevel++
-    fn()
-    T.deepLevel--
-  }
-
-  function describeBlock (label, fn) {
-    if (T.deepLevel === 0 && preventsSuiteFromRunning(label)) { return }
-    T.describeMessages.push(T.message(type, label, T.deepLevel))
+    !T.analyzing && T.describeMessages.push(T.message(type, label, T.deepLevel))
     T.deepLevel++
     fn()
     if (T.itBlockRunLevel >= T.deepLevel) {
@@ -245,10 +228,10 @@ describe = T.describe.bind(T)
 context = T.context.bind(T)
 it = T.it.bind(T)
 iit = T.iit.bind(T)
-beforeAll = T.beforeAll.bind(T)
-beforeEach = T.beforeEach.bind(T)
-afterAll = T.afterAll.bind(T)
-afterEach = T.afterEach.bind(T)
+beforeAll = T.defineHook('beforeAll').bind(T)
+beforeEach = T.defineHook('beforeEach').bind(T)
+afterAll = T.defineHook('afterAll').bind(T)
+afterEach = T.defineHook('afterEach').bind(T)
 ddescribe = T.ddescribe.bind(T)
 ccontext = T.ccontext.bind(T)
 /*eslint-enable */
