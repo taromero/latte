@@ -6,7 +6,7 @@
       "describe", "ddescribe", "context", "ccontext", "it", "iit",
       "beforeAll", "beforeEach", "T", "afterAll", "afterEach",
       "expect", "should", "_",
-      "figures", "Npm"
+      "figures", "Npm", "HTTP"
     ]
   }
 }

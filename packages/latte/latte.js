@@ -1,9 +1,11 @@
 var figures = Npm.require('figures')
+var readFile = Meteor.wrapAsync(Npm.require('fs').readFile)
 
 T = { // eslint-disable-line
-  run: function (onlySuites) {
+  run: function (input) {
     if (!process.env.RUN_TESTS) { return }
-    if (onlySuites) { T.onlySuites = onlySuites }
+    getOnlySuitesFromInput(input)
+
     T.preProcess = false
     T.describeBlocks.forEach(exec)
     T.analyzing = false
@@ -218,6 +220,20 @@ function getCollections () {
   function nonMeteorCollections (globalObject) {
     return globalObject instanceof Meteor.Collection
   }
+}
+
+// input can be either the file or the describe label to run
+function getOnlySuitesFromInput (input) {
+  if (!input) { return }
+  var onlySuites = null
+  var file = null
+  try { file = input && readFile(input.toString()).toString() } catch(e) {}
+  if (file) {
+    var start = file.indexOf('describe(') + 'describe('.length + 1
+    var end = file.indexOf(', function') - 1
+    onlySuites = [file.substring(start, end)]
+  }
+  T.onlySuites = onlySuites || input
 }
 
 // Global variables are not attached to the `global` object in Meteor packages, so we ignore style checker for this section.

@@ -13,7 +13,9 @@ Npm.depends({
 Package.onUse(function (api) {
   api.use('mongo@1.1.0', 'server')
   api.use('nooitaf:colors@0.0.2')
+  api.use('cfs:http-methods@0.0.29')
   api.addFiles('latte.js', 'server')
+  api.addFiles('http_api.js', 'server')
   api.export('T', 'server')
   api.export('describe', 'server')
   api.export('context', 'server')
