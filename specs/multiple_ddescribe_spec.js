@@ -22,6 +22,7 @@ ddescribe('second ddescribe', function () {
 T.postRunCallbacks.push({
   label: 'first ddescribe',
   fn: function () {
+    console.log('prcc')
     if (ddescribeCounter1 !== 1) { throw new Error('some assertion failed to exec. ddescribeCounter = ' + ddescribeCounter1) }
   }
 })
@@ -29,6 +30,7 @@ T.postRunCallbacks.push({
 T.postRunCallbacks.push({
   label: 'second ddescribe',
   fn: function () {
+    console.log('prcd')
     if (ddescribeCounter2 !== 1) { throw new Error('some assertion failed to exec. ddescribeCounter = ' + ddescribeCounter2) }
   }
 })

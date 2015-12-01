@@ -22,7 +22,7 @@ describe('Subject seeding', function () {
     })
 
     it('should not create new subjects', function () {
-      Subjects.find().count().should.eq(1)
+      Subjects.find().count().should.eq(2)
     })
 
   })
