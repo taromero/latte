@@ -226,7 +226,10 @@ function startsWith (str, needle) {
 }
 
 function getCollections () {
-  return Object.keys(global).map(toGlobalObject).filter(nonMeteorCollections)
+  return Object.keys(global)
+    .map(toGlobalObject)
+    .filter(nonMeteorCollections)
+    .concat([Meteor.users])
 
   function toGlobalObject (key) {
     return global[key]
