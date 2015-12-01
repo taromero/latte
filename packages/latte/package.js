@@ -13,6 +13,7 @@ Npm.depends({
 Package.onUse(function (api) {
   api.use('mongo@1.1.0', 'server')
   api.use('nooitaf:colors@0.0.2')
+  api.use('accounts-base@1.2.0')
   api.addFiles('latte.js', 'server')
   api.export('T', 'server')
   api.export('describe', 'server')
