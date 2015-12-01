@@ -24,7 +24,9 @@ describe('describe block containing an iit block, in presence of a ddescribe blo
 T.postRunCallbacks.push({
   label: 'ddescribe should take precedence over iit blocks',
   fn: function () {
-    if (ddescribeCounter !== 1) { throw new Error('some assertion failed to exec. ddescribeCounter = ' + ddescribeCounter) }
+    console.log('prca')
+    if (ddescribeCounter !== 1) { console.log('prca1'); throw new Error('some assertion failed to exec. ddescribeCounter = ' + ddescribeCounter) }
+    console.log('prca2')
   }
 })
 

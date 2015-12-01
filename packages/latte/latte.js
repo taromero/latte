@@ -4,32 +4,42 @@ var readFile = Meteor.wrapAsync(Npm.require('fs').readFile)
 T = { // eslint-disable-line
   run: function (input) {
     if (!process.env.RUN_TESTS) { return }
-    getOnlySuitesFromInput(input)
+    console.log('T.onlySuites', T.onlySuites)
+    console.log('T.analyzing', T.analyzing)
 
     T.preProcess = false
     T.describeBlocks.forEach(exec)
+    getOnlySuitesFromInput(input)
+    console.log('T.onlySuites', T.onlySuites)
     T.analyzing = false
     T.needToBoot = false
 
     var testingDB = new global.MongoInternals.RemoteCollectionDriver(T.testingDbUrl) // create a driver pointing to testing's DB
     getCollections().forEach(pointToTestingDB) // point collections to testing's DB
     getCollections().forEach(removeAll) // erase date on testing DB (though there should be none)
+    console.log('0')
 
+    console.log('T.onlyRootDescribeBlocksForIit', T.onlyRootDescribeBlocksForIit)
     T.onlyRootDescribeBlocksForIit.length ? T.onlyRootDescribeBlocksForIit.forEach(exec) : T.suites.forEach(exec) // if there's `iit` blocks, only run those
 
     // output number of successful over total tests
     log('\n' + (T.itCount + ' tests: ').yellow + (T.successfulItCount + ' passing, ').green + (T.itCount - T.successfulItCount + ' failing.').red)
+    console.log('1')
 
     getCollections().forEach(pointBackToDevelopDB) // point collections back to development's DB
     _(T.postRunCallbacks).reject(preventsSuiteFromRunning).map(fns).forEach(exec) // allow to run a callback when testing has finished (before possibly ending the process)
 
+    console.log('A')
     process.env.RUN_TESTS !== 'cont' && process.exit(T.exceptions.length) // end the process unless option is specified
 
+    console.log('B')
     T.itCount = 0
     T.successfulItCount = 0
     T.analyzing = true
     T.needToBoot = true
     T.suites = []
+    T.onlyRootDescribeBlocksForIit = []
+    console.log('C')
 
     function pointToTestingDB (collection) {
       collection.latte_original_driver = collection._driver // keep track of original driver, to point back to development's DB once tests have finished
