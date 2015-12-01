@@ -2,21 +2,17 @@ var ddescribeCounter1 = 0
 var ddescribeCounter2 = 0
 
 ddescribe('first ddescribe', function () {
-
   it('should run assertions', function () {
     'a'.should.eq('a')
     ddescribeCounter1++
   })
-
 })
 
 ddescribe('second ddescribe', function () {
-
   it('should run assertions', function () {
     'a'.should.eq('a')
     ddescribeCounter2++
   })
-
 })
 
 T.postRunCallbacks.push({

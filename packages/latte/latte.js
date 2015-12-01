@@ -72,7 +72,7 @@ T = { // eslint-disable-line
       T.afterEachBlocks.map(fns).forEach(exec)  // run afterEach blocks
       T.successfulItCount++                     // count number of successful tests, for reports
       log((msg + ' ' + figures.tick.green))                 // log into stdout tests label and result
-    } catch(e) {
+    } catch (e) {
       log(msg + ' ' + figures.cross.red)
       log(e.stack || e)
       T.exceptions.push(e)                      // if `T.exceptions` has any item at the en of the test run, exit code will be != 0
@@ -97,7 +97,7 @@ T = { // eslint-disable-line
   message: function (type, label, deepLevel) { // pretty print messages for console report
     var prefix = ''
     if (T.deepLevel === 0) { prefix += '~~~~~~~~'.grey + '\n' }
-    prefix += _.range(deepLevel).reduce(function (a) { return a + '  '}, '')
+    prefix += _.range(deepLevel).reduce(function (a) { return a + '  ' }, '')
     return prefix + type.magenta.bold + ' ' + label.cyan
   },
   ignore: function () {},
@@ -189,7 +189,6 @@ function descriptionBlock (type, options) {
       return obj.deepLevel !== T.deepLevel
     }
   }
-
 }
 
 function preventsSuiteFromRunning (label) {
@@ -226,7 +225,10 @@ function startsWith (str, needle) {
 }
 
 function getCollections () {
-  return Object.keys(global).map(toGlobalObject).filter(nonMeteorCollections)
+  return Object.keys(global)
+    .map(toGlobalObject)
+    .filter(nonMeteorCollections)
+    .concat([Meteor.users])
 
   function toGlobalObject (key) {
     return global[key]
