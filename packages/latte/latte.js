@@ -26,11 +26,11 @@ T = { // eslint-disable-line
     function pointToTestingDB (collection) {
       collection.latte_original_driver = collection._driver // keep track of original driver, to point back to development's DB once tests have finished
       collection._driver = testingDB
-      collection._collection = collection._driver.open(collection._name, collection._connection)
+      collection._driver.open(collection._name, collection._connection)
     }
 
     function pointBackToDevelopDB (collection) {
-      collection._collection = collection.latte_original_driver.open(collection._name, collection._connection)
+      collection.latte_original_driver.open(collection._name, collection._connection)
     }
   },
   describe: descriptionBlock('describe'),
