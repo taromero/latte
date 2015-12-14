@@ -4,7 +4,7 @@
       "Mongo", "Meteor", "Package",
       "SampleCollection", "DBCleanupCollection", "Subjects",
       "describe", "ddescribe", "context", "ccontext", "it", "iit",
-      "beforeAll", "beforeEach", "T", "afterAll", "afterEach",
+      "beforeEach", "T", "afterEach",
       "expect", "should", "_",
       "figures", "Npm"
     ]

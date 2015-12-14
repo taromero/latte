@@ -6,7 +6,7 @@ describe('database cleanup between describe blocks', function () {
       createOnHooks()
 
       it('should not see data modified on the same level', function () {
-        DBCleanupCollection.find().count().should.eq(2)
+        DBCleanupCollection.find().count().should.eq(1)
       })
     })
 
@@ -14,7 +14,7 @@ describe('database cleanup between describe blocks', function () {
       createOnHooks()
 
       it('should not see data modified on the same level', function () {
-        DBCleanupCollection.find().count().should.eq(2)
+        DBCleanupCollection.find().count().should.eq(1)
       })
     })
   })
@@ -24,14 +24,18 @@ describe('database cleanup between describe blocks', function () {
       createOnHooks()
 
       it('should see only date created on level X', function () {
-        DBCleanupCollection.find().count().should.eq(2)
+        DBCleanupCollection.find().count().should.eq(1)
       })
 
       describe('describe block on level X+1', function () {
         createOnHooks()
 
         it('should see data created on levels X and X+1', function () {
-          DBCleanupCollection.find().count().should.eq(6)
+          DBCleanupCollection.find().count().should.eq(2)
+        })
+
+        it('should see the same data on duplicated "it"s', function () {
+          DBCleanupCollection.find().count().should.eq(2)
         })
       })
     })
@@ -46,7 +50,7 @@ describe('database cleanup between describe blocks', function () {
 
         it('should see data created on levels X and X+1', function () {
           // because the after blocks have not run on level X, they will run after `it` blocks on level X+1
-          DBCleanupCollection.find().count().should.eq(4)
+          DBCleanupCollection.find().count().should.eq(2)
         })
       })
     })
@@ -55,9 +59,7 @@ describe('database cleanup between describe blocks', function () {
 
 function createOnHooks () {
   beforeEach(create)
-  beforeAll(create)
   afterEach(create)
-  afterAll(create)
 }
 function create () {
   DBCleanupCollection.insert({})

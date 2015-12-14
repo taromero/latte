@@ -75,7 +75,7 @@ From the command line:
 
 #### Gotchas
 
-- `afterAll` and `afterEach` must be declared before `it` blocks in each `describe` or `context` block.
+- `afterEach` must be declared before `it` blocks in each `describe` or `context` block.
 - Cannot run assertions inside `before` or `after` blocks.
 - Initially designed to work only on server side.
 - If the internet connection is flaky, it might take some seconds to end the Meteor process (this is due to some Meteor's internals).

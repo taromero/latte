@@ -66,13 +66,12 @@ T = { // eslint-disable-line
     T.itCount++ // count number of tests, for reports
     try {
       T.itBlockRunLevel = T.deepLevel
-      T.beforeAllBlocks.map(fns).forEach(exec)           // run beforeAll blocks
       T.beforeEachBlocks.map(fns).forEach(exec) // run beforeEach blocks
-      T.beforeAllBlocks = []                    // empty beforeAll block array
       fn()                                      // run assertions in it block
       T.afterEachBlocks.map(fns).forEach(exec)  // run afterEach blocks
       T.successfulItCount++                     // count number of successful tests, for reports
       log((msg + ' ' + figures.tick.green))                 // log into stdout tests label and result
+      getCollections().forEach(removeAll)
     } catch (e) {
       log(msg + ' ' + figures.cross.red)
       log(e.stack || e)
@@ -104,10 +103,11 @@ T = { // eslint-disable-line
   isFirstAddedSuite: true,
   analyzing: true,
   onlySuites: [],
+  _contextBlocks: ['beforeEach', 'afterEach'],
   testingDbUrl: 'mongodb://127.0.0.1:3001/meteor_latte'
 }
 
-addHookBlocks() // adds before/after each/all functions
+addContextBlocks() // adds before/after each/all functions
 
 if (process.env.LATTE_SUITES) {
   T.onlySuites = T.onlySuites.concat(JSON.parse(process.env.LATTE_SUITES))
@@ -154,19 +154,10 @@ function descriptionBlock (type, options) {
     T.describeMessages.push(T.message(type, label, T.deepLevel))
     T.deepLevel++
     fn()
-    if (T.itBlockRunLevel >= T.deepLevel) {
-      T.afterAllBlocks.filter(sameLevel).map(fns).forEach(exec) // only run afterAll blocks for this level
-    }
     T.itBlockRunLevel = T.deepLevel
     T.describeMessages = []
-    var contextBlocks = ['beforeAll', 'beforeEach', 'afterEach', 'afterAll']
-    contextBlocks.forEach(filterFromSameLevel)
+    T._contextBlocks.forEach(filterFromSameLevel)
     T.deepLevel--
-    getCollections().forEach(removeAll)
-  }
-
-  function sameLevel (obj) {
-    return obj.deepLevel === T.deepLevel
   }
 
   function filterFromSameLevel (blockName) {
@@ -226,11 +217,10 @@ function getCollections () {
   }
 }
 
-function addHookBlocks () {
-  var blockNames = ['beforeEach', 'beforeAll', 'afterEach', 'afterAll']
-  blockNames.forEach(addHookBlock)
+function addContextBlocks () {
+  T._contextBlocks.forEach(addContextBlock)
 
-  function addHookBlock (blockName) {
+  function addContextBlock (blockName) {
     T[blockName + 'Blocks'] = []
     T[blockName] = function (fn) {
       if (T.analyzing) { return }
@@ -247,9 +237,7 @@ describe = T.describe.bind(T)
 context = T.context.bind(T)
 it = T.it.bind(T)
 iit = T.iit.bind(T)
-beforeAll = T.beforeAll.bind(T)
 beforeEach = T.beforeEach.bind(T)
-afterAll = T.afterAll.bind(T)
 afterEach = T.afterEach.bind(T)
 ddescribe = T.ddescribe.bind(T)
 ccontext = T.ccontext.bind(T)
