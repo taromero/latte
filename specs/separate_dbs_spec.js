@@ -10,7 +10,7 @@ describe('latte should use a separate DB from develop', function () {
   })
 
   context('creating a new entity', function () {
-    beforeAll(function () {
+    beforeEach(function () {
       SampleCollection.insert({ env: 'test' })
     })
 

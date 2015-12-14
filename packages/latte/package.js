@@ -1,6 +1,6 @@
 Package.describe({
   name: 'canotto90:latte',
-  version: '0.7.2',
+  version: '0.8.0',
   summary: 'Run mocha-like specs in Meteor, without Velocity\'s overhead.',
   git: 'https://github.com/taromero/latte.git',
   documentation: '../../README.md'
@@ -20,9 +20,7 @@ Package.onUse(function (api) {
   api.export('context', 'server')
   api.export('it', 'server')
   api.export('iit', 'server')
-  api.export('beforeAll', 'server')
   api.export('beforeEach', 'server')
-  api.export('afterAll', 'server')
   api.export('afterEach', 'server')
   api.export('ddescribe', 'server')
   api.export('ccontext', 'server')
