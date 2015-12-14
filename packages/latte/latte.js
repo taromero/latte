@@ -7,12 +7,13 @@ T = { // eslint-disable-line
     T.analyzing = false
   },
   run: function () {
-    if (!process.env.RUN_TESTS) { return }
+    if (!process.env.RUN_TESTS) { return } // only run tests when explicitly told so
 
     var testingDB = new global.MongoInternals.RemoteCollectionDriver(T.testingDbUrl) // create a driver pointing to testing's DB
     getCollections().forEach(pointToTestingDB) // point collections to testing's DB
     getCollections().forEach(removeAll) // erase date on testing DB (though there should be none)
 
+    // Run specs
     T.onlyRootDescribeBlocksForIit.length ? T.onlyRootDescribeBlocksForIit.forEach(exec) : T.suites.forEach(exec) // if there's `iit` blocks, only run those
 
     // output number of successful over total tests
@@ -78,27 +79,15 @@ T = { // eslint-disable-line
       T.exceptions.push(e)                      // if `T.exceptions` has any item at the en of the test run, exit code will be != 0
     }
   },
-  beforeAll: function (fn) {
-    if (T.analyzing) { return }
-    T.beforeAllBlocks.push({ fn: fn, deepLevel: T.deepLevel })  // keep track of beforeAll blocks, to run them later
-  },
-  beforeEach: function (fn) {
-    if (T.analyzing) { return }
-    T.beforeEachBlocks.push({ fn: fn, deepLevel: T.deepLevel })
-  },
-  afterAll: function (fn) {
-    if (T.analyzing) { return }
-    T.afterAllBlocks.push({ fn: fn, deepLevel: T.deepLevel })
-  },
-  afterEach: function (fn) {
-    if (T.analyzing) { return }
-    T.afterEachBlocks.push({ fn: fn, deepLevel: T.deepLevel })
-  },
   message: function (type, label, deepLevel) { // pretty print messages for console report
     var prefix = ''
     if (T.deepLevel === 0) { prefix += '~~~~~~~~'.grey + '\n' }
-    prefix += _.range(deepLevel).reduce(function (a) { return a + '  ' }, '')
+    prefix += _.range(deepLevel).reduce(addIndentation, '')
     return prefix + type.magenta.bold + ' ' + label.cyan
+
+    function addIndentation (space) {
+      return space + '  '
+    }
   },
   ignore: function () {},
   suites: [],
@@ -109,10 +98,6 @@ T = { // eslint-disable-line
   horizontalLevel: 0,
   itCount: 0,
   successfulItCount: 0,
-  beforeAllBlocks: [],
-  afterAllBlocks: [],
-  beforeEachBlocks: [],
-  afterEachBlocks: [],
   onlyRootDescribeBlocksForIit: [],
   describeMessages: [],
   itBlockRunLevel: 0,
@@ -121,6 +106,8 @@ T = { // eslint-disable-line
   onlySuites: [],
   testingDbUrl: 'mongodb://127.0.0.1:3001/meteor_latte'
 }
+
+addHookBlocks() // adds before/after each/all functions
 
 if (process.env.LATTE_SUITES) {
   T.onlySuites = T.onlySuites.concat(JSON.parse(process.env.LATTE_SUITES))
@@ -236,6 +223,19 @@ function getCollections () {
 
   function nonMeteorCollections (globalObject) {
     return globalObject instanceof Meteor.Collection
+  }
+}
+
+function addHookBlocks () {
+  var blockNames = ['beforeEach', 'beforeAll', 'afterEach', 'afterAll']
+  blockNames.forEach(addHookBlock)
+
+  function addHookBlock (blockName) {
+    T[blockName + 'Blocks'] = []
+    T[blockName] = function (fn) {
+      if (T.analyzing) { return }
+      T[blockName + 'Blocks'].push({ fn: fn, deepLevel: T.deepLevel })
+    }
   }
 }
 
