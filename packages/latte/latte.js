@@ -71,11 +71,16 @@ T = { // eslint-disable-line
       T.afterEachBlocks.map(fns).forEach(exec)  // run afterEach blocks
       T.successfulItCount++                     // count number of successful tests, for reports
       log((msg + ' ' + figures.tick.green))                 // log into stdout tests label and result
-      getCollections().forEach(removeAll)
     } catch (e) {
-      log(msg + ' ' + figures.cross.red)
-      log(e.stack || e)
-      T.exceptions.push(e)                      // if `T.exceptions` has any item at the en of the test run, exit code will be != 0
+      if (e.message && e.message === "It\'s ok  to display this error, it\'s part of a test -12344321-") { // testing purposes
+        T.successfulItCount++                     // count number of successful tests, for reports
+      } else { // normal flow
+        log(msg + ' ' + figures.cross.red)
+        log(e.stack || e)
+        T.exceptions.push(e)                      // if `T.exceptions` has any item at the en of the test run, exit code will be != 0
+      }
+    } finally {
+      getCollections().forEach(removeAll)
     }
   },
   message: function (type, label, deepLevel) { // pretty print messages for console report

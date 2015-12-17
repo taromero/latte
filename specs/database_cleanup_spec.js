@@ -55,6 +55,19 @@ describe('database cleanup between describe blocks', function () {
       })
     })
   })
+
+  context('it assertion throws an exception', function () {
+    try {
+      it('creates an entity and throws an exception', function () {
+        DBCleanupCollection.insert({})
+        throw new Error('It\'s ok  to display this error, it\'s part of a test -12344321-')
+      })
+    } catch (e) {}
+
+    it('should have deleted the entity', function () {
+      DBCleanupCollection.find().count().should.eq(0)
+    })
+  })
 })
 
 function createOnHooks () {
