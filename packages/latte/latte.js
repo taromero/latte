@@ -208,17 +208,18 @@ function startsWith (str, needle) {
 }
 
 function getCollections () {
-  return Object.keys(global)
+  const globalObject = T.collectionsContainer || global
+  return Object.keys(globalObject)
     .map(toGlobalObject)
     .filter(nonMeteorCollections)
     .concat([Meteor.users])
 
   function toGlobalObject (key) {
-    return global[key]
+    return globalObject[key]
   }
 
-  function nonMeteorCollections (globalObject) {
-    return globalObject instanceof Meteor.Collection
+  function nonMeteorCollections (value) {
+    return value instanceof Meteor.Collection
   }
 }
 
