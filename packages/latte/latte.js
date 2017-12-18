@@ -16,7 +16,6 @@ T = { // eslint-disable-line
   run: function () {
     if (!process.env.RUN_TESTS) { return } // only run tests when explicitly told so
 
-    var testingDB = new global.MongoInternals.RemoteCollectionDriver(T.testingDbUrl) // create a driver pointing to testing's DB
     getCollections().forEach(pointToTestingDB) // point collections to testing's DB
     T.cleanUpDb() // erase date on testing DB (though there should be none)
 
@@ -32,13 +31,12 @@ T = { // eslint-disable-line
     process.env.RUN_TESTS !== 'cont' && process.exit(T.exceptions.length) // end the process unless option is specified
 
     function pointToTestingDB (collection) {
-      collection.latte_original_driver = collection._driver // keep track of original driver, to point back to development's DB once tests have finished
-      collection._driver = testingDB
-      collection._driver.open(collection._name, collection._connection)
+      collection.latteOriginalDatabaseName = collection._driver.mongo.db.s.databaseName // keep track of original db name, to point back to development's DB once tests have finished
+      collection._driver.mongo.db.s.databaseName = T.testingDbName
     }
 
     function pointBackToDevelopDB (collection) {
-      collection.latte_original_driver.open(collection._name, collection._connection)
+      collection._driver.mongo.db.s.databaseName = collection.latteOriginalDatabaseName
     }
   },
   describe: descriptionBlock('describe'),
@@ -119,7 +117,7 @@ T = { // eslint-disable-line
   analyzing: true,
   onlySuites: [],
   _contextBlocks: ['beforeEach', 'afterEach'],
-  testingDbUrl: 'mongodb://127.0.0.1:3001/meteor_latte'
+  testingDbName: 'meteor_latte'
 }
 
 addContextBlocks() // adds before/after each/all functions

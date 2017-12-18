@@ -32,7 +32,7 @@ The aim of this project is to provide a minimal library to just run specs mocha-
 
 #### Features
 
-- It connects to a `separate DB` from development's one. You can specify which DB to use by setting T.testingDbUrl. The default is `mongodb://127.0.0.1:3001/meteor_latte`.
+- It connects to a `separate DB` from development's one (though on the same Mongo server). You can specify which DB to use by setting T.testingDbName. The default is `meteor_latte`.
 - It `cleans up the database` upon start, and after running each describe block.
 - Simple (yet nice?) `console based report`.
 - It runs inside `Meteor's context` (you can user global variables, such as Meteor collections).
