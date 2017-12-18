@@ -11,7 +11,7 @@ T = { // eslint-disable-line
 
     var testingDB = new global.MongoInternals.RemoteCollectionDriver(T.testingDbUrl) // create a driver pointing to testing's DB
     getCollections().forEach(pointToTestingDB) // point collections to testing's DB
-    getCollections().forEach(removeAll) // erase date on testing DB (though there should be none)
+    T.cleanUpDb() // erase date on testing DB (though there should be none)
 
     // Run specs
     T.onlyRootDescribeBlocksForIit.length ? T.onlyRootDescribeBlocksForIit.forEach(exec) : T.suites.forEach(exec) // if there's `iit` blocks, only run those
@@ -80,7 +80,7 @@ T = { // eslint-disable-line
         T.exceptions.push(e)                      // if `T.exceptions` has any item at the en of the test run, exit code will be != 0
       }
     } finally {
-      getCollections().forEach(removeAll)
+      T.cleanUpDb()
     }
   },
   message: function (type, label, deepLevel) { // pretty print messages for console report
@@ -92,6 +92,9 @@ T = { // eslint-disable-line
     function addIndentation (space) {
       return space + '  '
     }
+  },
+  cleanUpDb: function () {
+    getCollections().forEach(removeAll)
   },
   ignore: function () {},
   suites: [],
