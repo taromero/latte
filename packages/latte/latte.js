@@ -1,3 +1,10 @@
+// Prevent processing this file, unless we are in testing mode.
+// While initially tried to implement this through Meteor.isTest,
+// I found it a bit tricky.
+if (process.env.NODE_ENV !== 'test' || !process.env.RUN_TESTS) {
+  return
+}
+
 var figures = Npm.require('figures')
 
 T = { // eslint-disable-line
