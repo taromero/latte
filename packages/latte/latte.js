@@ -19,8 +19,10 @@ T = { // eslint-disable-line
     getCollections().forEach(pointToTestingDB) // point collections to testing's DB
     T.cleanUpDb() // erase date on testing DB (though there should be none)
 
+    T.globalBeforeAll()
     // Run specs
     T.onlyRootDescribeBlocksForIit.length ? T.onlyRootDescribeBlocksForIit.forEach(exec) : T.suites.forEach(exec) // if there's `iit` blocks, only run those
+    T.globalAfterAll()
 
     // output number of successful over total tests
     log('\n' + (T.itCount + ' tests: ').yellow + (T.successfulItCount + ' passing, ').green + (T.itCount - T.successfulItCount + ' failing.').red)
@@ -117,7 +119,9 @@ T = { // eslint-disable-line
   analyzing: true,
   onlySuites: [],
   _contextBlocks: ['beforeEach', 'afterEach'],
-  testingDbName: 'meteor_latte'
+  testingDbName: 'meteor_latte',
+  globalBeforeAll: function () {},
+  globalAfterAll: function () {}
 }
 
 addContextBlocks() // adds before/after each/all functions
