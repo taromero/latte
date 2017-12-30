@@ -16,24 +16,24 @@ The aim of this project is to provide a minimal library to just run specs mocha-
 
 #### How to use
 
-1. `npm install latte`.
-2. `npm install chai`. For assertions.
+1. `npm install latte --save-dev`.
+2. `npm install chai --save-dev`. For assertions.
 3. Write a spec anywhere in a server directory.
-4. On the command line, run: `NODE_ENV=test RUN_TESTS=1 meteor --once`
+4. On the command line, run: `NODE_ENV=test LATTE_MODE=run meteor --once`
 
 #### Workflow
 
 ###### Development (watch-mode)
 
-1. Run `NODE_ENV=test RUN_TESTS=cont meteor`.
-2. Write your specs. You'll likely want to use `ddescribe` to only run that test until you got it right.
+1. Run `NODE_ENV=test LATTE_MODE=watch meteor`.
+2. Write your specs. You'll likely want to use `ddescribe` to only run that test until you get it right.
 3. Watch the tests run. If you are using Meteor v1.5+ the code reload should be fast.
 4. Fix your code or tests until they are ok.
 
 ###### CI (single-run-mode)
 
 1. Write your specs.
-2. Run `NODE_ENV=test RUN_TESTS=1 meteor --once`.
+2. Run `NODE_ENV=test LATTE_MODE=run meteor --once`.
 3. Watch test report.
 4. Check the exit code to mark the build state.
 
@@ -59,8 +59,8 @@ describe('a suite name', function() { ... })
 
 From the command line:
 
-  * run only a list a suites: `NODE_ENV=test RUN_TESTS=1 LATTE_SUITES='["a suite name"]' meteor --once`.
-  * run all but a list a suites: `NODE_ENV=test RUN_TESTS=1 LATTE_SUITES='["~a suite name"]' meteor --once`.
+  * run only a list a suites: `NODE_ENV=test LATTE_MODE=run LATTE_SUITES='["a suite name"]' meteor --once`.
+  * run all but a list a suites: `NODE_ENV=test LATTE_MODE=run LATTE_SUITES='["~a suite name"]' meteor --once`.
 
 #### Gotchas
 

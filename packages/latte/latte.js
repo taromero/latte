@@ -1,7 +1,8 @@
 // Prevent processing this file, unless we are in testing mode.
 // While initially tried to implement this through Meteor.isTest,
 // I found it a bit tricky.
-if (process.env.NODE_ENV !== 'test' || !process.env.RUN_TESTS) {
+const allowedModes = ['run', 'watch']
+if (process.env.NODE_ENV !== 'test' || !allowedModes.includes(process.env.LATTE_MODE)) {
   return
 }
 
@@ -14,7 +15,7 @@ T = { // eslint-disable-line
     T.analyzing = false
   },
   run: function () {
-    if (!process.env.RUN_TESTS) { return } // only run tests when explicitly told so
+    if (!process.env.LATTE_MODE) { return } // only run tests when explicitly told so
 
     getCollections().forEach(pointToTestingDB) // point collections to testing's DB
     T.cleanUpDb() // erase date on testing DB (though there should be none)
@@ -30,7 +31,7 @@ T = { // eslint-disable-line
     getCollections().forEach(pointBackToDevelopDB) // point collections back to development's DB
     _(T.postRunCallbacks).reject(preventsSuiteFromRunning).map(fns).forEach(exec) // allow to run a callback when testing has finished (before possibly ending the process)
 
-    process.env.RUN_TESTS !== 'cont' && process.exit(T.exceptions.length) // end the process unless option is specified
+    process.env.LATTE_MODE !== 'watch' && process.exit(T.exceptions.length) // end the process unless option is specified
 
     function pointToTestingDB (collection) {
       collection.latteOriginalDatabaseName = collection._driver.mongo.db.s.databaseName // keep track of original db name, to point back to development's DB once tests have finished
@@ -140,7 +141,7 @@ function exec (fn) { fn() }
 function removeAll (collection) { collection.remove({}) }
 
 function descriptionBlock (type, options) {
-  if (!process.env.RUN_TESTS) { return function () {} } // don't run any test related stuff unless explicitly told so
+  if (!process.env.LATTE_MODE) { return function () {} } // don't run any test related stuff unless explicitly told so
   options = options || {}
 
   return function analyzeOrExec (label, fn) {
