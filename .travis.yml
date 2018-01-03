@@ -9,6 +9,6 @@ before_install:
   - npm install snazzy -g
 script:
   - snazzy
-  - sh run_tests.sh
+  - npm test
   - bash check_for_new_version_number.bash
   - sh publish.sh

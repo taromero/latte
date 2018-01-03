@@ -1,0 +1,34 @@
+{
+  "scripts": {
+    "test": "sh run_tests.sh"
+  },
+  "standard": {
+    "global": [
+      "Mongo",
+      "Meteor",
+      "Package",
+      "SampleCollection",
+      "DBCleanupCollection",
+      "Subjects",
+      "describe",
+      "ddescribe",
+      "context",
+      "ccontext",
+      "it",
+      "iit",
+      "beforeEach",
+      "T",
+      "afterEach",
+      "expect",
+      "should",
+      "_",
+      "figures",
+      "Npm"
+    ]
+  },
+  "dependencies": {
+    "babel-runtime": "^6.26.0",
+    "chai": "^4.1.2",
+    "latte": "file:.."
+  }
+}

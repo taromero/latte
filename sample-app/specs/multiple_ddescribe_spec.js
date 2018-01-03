@@ -18,14 +18,21 @@ ddescribe('second ddescribe', function () {
 T.postRunCallbacks.push({
   label: 'first ddescribe',
   fn: function () {
-    if (ddescribeCounter1 !== 1) { throw new Error('some assertion failed to exec. ddescribeCounter = ' + ddescribeCounter1) }
+    if (ddescribeCounter1 !== 1) {
+      throw new Error(
+        'some assertion failed to exec. ddescribeCounter = ' + ddescribeCounter1
+      )
+    }
   }
 })
 
 T.postRunCallbacks.push({
   label: 'second ddescribe',
   fn: function () {
-    if (ddescribeCounter2 !== 1) { throw new Error('some assertion failed to exec. ddescribeCounter = ' + ddescribeCounter2) }
+    if (ddescribeCounter2 !== 1) {
+      throw new Error(
+        'some assertion failed to exec. ddescribeCounter = ' + ddescribeCounter2
+      )
+    }
   }
 })
-

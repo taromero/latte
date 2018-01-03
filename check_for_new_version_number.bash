@@ -2,7 +2,7 @@
 
 # Only on PR builds
 if [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
-  diff <(git show master:packages/latte/package.js | grep -Po "version: \'.*?\',") <(git show HEAD:packages/latte/package.js | grep -Po "version: \'.*?\',")
+  diff <(git show master:package.json | grep -Po "version: \'.*?\',") <(git show HEAD:package.json | grep -Po "version: \'.*?\',")
 
   version_changed=$?; if [ $version_changed != 0 ]; then
     exit 0

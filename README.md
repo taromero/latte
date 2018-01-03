@@ -8,7 +8,7 @@
 
 #### What
 
-Testing framework to write mocha-esque specs, without the need of using Velocity.
+Testing framework to run mocha-esque specs on Meteor apps., without the need of using Velocity.
 
 #### Motivation
 
@@ -16,10 +16,15 @@ The aim of this project is to provide a minimal library to just run specs mocha-
 
 #### How to use
 
-1. `npm install latte --save-dev`.
-2. `npm install chai --save-dev`. For assertions.
+1. `npm install latte`.
+2. `npm install chai`. For assertions.
 3. Write a spec anywhere in a server directory.
-4. On the command line, run: `NODE_ENV=test LATTE_MODE=run meteor --once`
+4. Somewhere in the code (before loading the test files):
+```javascript
+  const latte = require('latte')
+  Meteor.startup(() => latte.test())
+```
+5. On the command line, run: `NODE_ENV=test LATTE_MODE=run meteor --once`.
 
 #### Workflow
 
