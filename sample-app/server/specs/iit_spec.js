@@ -1,5 +1,5 @@
-var iitCounter = 0
-var eachCounter = 0
+let iitCounter = 0
+let eachCounter = 0
 
 describe('iit behaviour', function () {
   context('an `iit` block is defined in some `describe` block', function () {

@@ -3,8 +3,7 @@
 [![Build Status](https://travis-ci.org/taromero/latte.svg?branch=master)](https://travis-ci.org/taromero/latte)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://github.com/feross/standard)
 
-![](https://raw.githubusercontent.com/taromero/latte/master/readme_images/latte.png)
-![](https://raw.githubusercontent.com/taromero/latte/master/readme_images/latte_debugging.png)
+![](https://raw.githubusercontent.com/taromero/latte/master/sample-spec.png)
 
 #### What
 
@@ -16,15 +15,17 @@ The aim of this project is to provide a minimal library to just run specs mocha-
 
 #### How to use
 
-1. `npm install latte`.
-2. `npm install chai`. For assertions.
-3. Write a spec anywhere in a server directory.
+1. `meteor npm install latte`.
+2. `meteor add practicalmeteor:chai`. Latte needs an assertion library, and I've been using ChaiJS.
+3. Write a spec anywhere in a server directory. You'll need an assertion library like `chai` or the `assert` module.
 4. Somewhere in the code (before loading the test files):
 ```javascript
   const latte = require('latte')
   Meteor.startup(() => latte.test())
 ```
 5. On the command line, run: `NODE_ENV=test LATTE_MODE=run meteor --once`.
+
+For examples, check `sample-app/`.
 
 #### Workflow
 
@@ -74,3 +75,6 @@ From the command line:
 - Initially designed to work only on server side.
 - If the internet connection is flaky, it might take some seconds to end the Meteor process (this is due to some Meteor's internals).
 
+#### Original motivation
+
+https://slides.com/canotto90/deck

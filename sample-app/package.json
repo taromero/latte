@@ -2,6 +2,11 @@
   "scripts": {
     "test": "sh run_tests.sh"
   },
+  "dependencies": {
+    "babel-runtime": "^6.26.0",
+    "chai": "^4.1.2",
+    "latte": "file:.."
+  },
   "standard": {
     "global": [
       "Mongo",
@@ -23,12 +28,7 @@
       "should",
       "_",
       "figures",
-      "Npm"
+      "assert"
     ]
-  },
-  "dependencies": {
-    "babel-runtime": "^6.26.0",
-    "chai": "^4.1.2",
-    "latte": "file:.."
   }
 }

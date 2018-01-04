@@ -1,4 +1,4 @@
-var ddescribeCounter = 0
+let ddescribeCounter = 0
 
 ddescribe('if there is a ddescribe block', function () {
   it('should run assertions', function () {

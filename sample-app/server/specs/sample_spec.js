@@ -1,13 +1,14 @@
 global.Subjects = new Mongo.Collection('subjects')
 
 describe('Subject seeding', function () {
-  context('there aren\'t any subjects in the DB', function () {
+  context("there aren't any subjects in the DB", function () {
     beforeEach(function () {
       Seed.subjects()
     })
 
     it('should create new subjects', function () {
-      Subjects.find().count().should.be.gt(1)
+      const count = Subjects.find().count()
+      count.should.be.gt(1)
     })
   })
 
@@ -18,7 +19,8 @@ describe('Subject seeding', function () {
     })
 
     it('should not create new subjects', function () {
-      Subjects.find().count().should.eq(1)
+      const count = Subjects.find().count()
+      count.should.be.eq(1)
     })
   })
 })
