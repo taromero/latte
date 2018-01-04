@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/taromero/latte#readme",
   "dependencies": {
-    "colors": "^1.1.2",
+    "chalk": "^2.3.0",
     "figures": "^2.0.0"
   },
   "standard": {

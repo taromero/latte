@@ -15,8 +15,8 @@ The aim of this project is to provide a minimal library to just run specs mocha-
 
 #### How to use
 
-1. `meteor npm install latte`.
-2. `meteor add practicalmeteor:chai`. Latte needs an assertion library, and I've been using ChaiJS.
+1. `npm install latte`.
+2. `npm install chai`. Latte needs an assertion library, and I've been using ChaiJS.
 3. Write a spec anywhere in a server directory. You'll need an assertion library like `chai` or the `assert` module.
 4. Somewhere in the code (before loading the test files):
 ```javascript
