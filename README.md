@@ -15,7 +15,7 @@ The aim of this project is to provide a minimal library to just run specs mocha-
 
 #### How to use
 
-1. `npm install latte`.
+1. `npm install latte`. For how to install it as a devDependency check below.
 2. `npm install chai`. Latte needs an assertion library, and I've been using ChaiJS.
 3. Write a spec anywhere in a server directory. You'll need an assertion library like `chai` or the `assert` module.
 4. Somewhere in the code (before loading the test files):
@@ -26,6 +26,14 @@ The aim of this project is to provide a minimal library to just run specs mocha-
 5. On the command line, run: `NODE_ENV=test LATTE_MODE=run meteor --once`.
 
 For examples, check `sample-app/`.
+
+###### How to install as devDependencies
+
+Meteor filters devDependencies when building, for either production or development modes, so using `latte` (and eventually `chai`) as npm devDependencies requires a workaround, by running the `test` command instead of the `run` one:
+
+`NODE_ENV=test LATTE_MODE=run meteor test --once --driver-package meteor-base`
+
+`test` makes it mandatory to set a Meteor package as a the `--driver-package` param. Right now it seems you can use `meteor-base` (or other package declared at .meteor/packages). This is just a workaround, as setting a random package on this parameter doesn't seem to have other effect than preventing the `test` command from failing.
 
 #### Workflow
 
