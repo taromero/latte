@@ -17,7 +17,7 @@ The aim of this project is to provide a minimal library to just run specs mocha-
 
 1. `npm install latte`. For how to install it as a devDependency check below.
 2. `npm install chai`. Latte needs an assertion library, and I've been using ChaiJS.
-3. Write a spec anywhere in a server directory. You'll need an assertion library like `chai` or the `assert` module.
+3. Write a spec anywhere in a server directory.
 4. Somewhere in the code (before loading the test files):
 ```javascript
   const latte = require('latte')

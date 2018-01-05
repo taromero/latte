@@ -1,5 +1,6 @@
 sudo: required
 language: node_js
+node_js: "8"
 branches:
   only:
     - master
@@ -7,6 +8,9 @@ before_install:
   - curl https://install.meteor.com | /bin/sh
 script:
   - npm run lint
+  - cd sample-app/
+  - npm install
   - npm test
+  - cd ..
   - bash check_for_new_version_number.bash
   - sh publish.sh

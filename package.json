@@ -23,7 +23,7 @@
   "homepage": "https://github.com/taromero/latte#readme",
   "dependencies": {
     "chalk": "^2.3.0",
-    "figures": "^2.0.0",
+    "figures": "^2.0.0"
   },
   "devDependencies": {
     "standard": "^10.0.3",
