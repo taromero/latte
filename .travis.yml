@@ -5,10 +5,8 @@ branches:
     - master
 before_install:
   - curl https://install.meteor.com | /bin/sh
-  - npm install standard -g
-  - npm install snazzy -g
 script:
-  - snazzy
+  - npm run lint
   - npm test
   - bash check_for_new_version_number.bash
   - sh publish.sh

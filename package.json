@@ -4,7 +4,8 @@
   "description": "Testing framework to run mocha-esque specs on Meteor apps.",
   "main": "index.js",
   "scripts": {
-    "test": "cd sample-app && sh run_tests.sh"
+    "test": "cd sample-app && npm test",
+    "lint": "standard | snazzy && cd sample-app && standard | snazzy"
   },
   "repository": {
     "type": "git",
@@ -22,11 +23,19 @@
   "homepage": "https://github.com/taromero/latte#readme",
   "dependencies": {
     "chalk": "^2.3.0",
-    "figures": "^2.0.0"
+    "figures": "^2.0.0",
+  },
+  "devDependencies": {
+    "standard": "^10.0.3",
+    "snazzy": "^7.0.0",
+    "prettier": "^1.9.2"
   },
   "standard": {
     "global": [
       "Meteor"
+    ],
+    "ignore": [
+      "sample-app/"
     ]
   }
 }
