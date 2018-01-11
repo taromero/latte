@@ -1,6 +1,6 @@
 {
-  "name": "latte",
-  "version": "1.0.0",
+  "name": "@taromero/latte",
+  "version": "1.0.1",
   "description": "Testing framework to run mocha-esque specs on Meteor apps.",
   "main": "index.js",
   "scripts": {
