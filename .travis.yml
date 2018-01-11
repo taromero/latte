@@ -1,14 +1,16 @@
 sudo: required
 language: node_js
+node_js: "8"
 branches:
   only:
     - master
 before_install:
   - curl https://install.meteor.com | /bin/sh
-  - npm install standard -g
-  - npm install snazzy -g
 script:
-  - snazzy
-  - sh run_tests.sh
+  - npm run lint
+  - cd sample-app/
+  - npm install
+  - npm test
+  - cd ..
   - bash check_for_new_version_number.bash
   - sh publish.sh

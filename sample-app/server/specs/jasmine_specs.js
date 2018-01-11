@@ -4,17 +4,16 @@ describe('jasmine limited suite', function () {
 
   describe('A suite', function () {
     it('contains spec with an expectation', function () {
-      true.should.be.true
+      true.should.eq(true)
     })
   })
 
   describe('A suite is just a function', function () {
-    var a
+    let a
 
     it('and so is a spec', function () {
       a = true
-
-      a.should.be.true
+      a.should.eq(true)
     })
   })
 
@@ -22,14 +21,14 @@ describe('jasmine limited suite', function () {
 
   describe('A spec', function () {
     it('is just a function, so it can contain any code', function () {
-      var foo = 0
+      let foo = 0
       foo += 1
 
       expect(foo).to.eq(1)
     })
 
     it('can have more than one expectation', function () {
-      var foo = 0
+      let foo = 0
       foo += 1
 
       expect(foo).to.eq(1)
@@ -40,7 +39,7 @@ describe('jasmine limited suite', function () {
   // Setup and Teardown
 
   describe('A spec using beforeEach and afterEach', function () {
-    var foo = 0
+    let foo = 0
 
     beforeEach(function () {
       foo += 1
@@ -63,7 +62,7 @@ describe('jasmine limited suite', function () {
   // Nesting describe Blocks
 
   describe('A spec', function () {
-    var foo
+    let foo
 
     beforeEach(function () {
       foo = 0
@@ -84,7 +83,7 @@ describe('jasmine limited suite', function () {
     })
 
     describe('nested inside a second describe', function () {
-      var bar
+      let bar
 
       beforeEach(function () {
         bar = 1

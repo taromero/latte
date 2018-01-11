@@ -3,57 +3,60 @@
 [![Build Status](https://travis-ci.org/taromero/latte.svg?branch=master)](https://travis-ci.org/taromero/latte)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://github.com/feross/standard)
 
-![](https://raw.githubusercontent.com/taromero/latte/master/readme_images/latte.png)
-![](https://raw.githubusercontent.com/taromero/latte/master/readme_images/latte_debugging.png)
+![](https://raw.githubusercontent.com/taromero/latte/master/sample-spec.png)
 
 #### What
 
-Testing framework to write mocha-esque specs, without the need of using Velocity.
+Testing framework to run mocha-esque specs on Meteor apps., without the need of using Velocity.
 
 #### Motivation
 
-Velocity's goal is complex, and I've experienced some issues while working with it. I agree that Velocity is a great idea, but I still feel it a bit unstable. Also, some features can be unnecessary overhead for **some** projects.
-
-The aim of this project is to provide a minimal library to just run specs mocha-style, upon running a command. No reactive feedback of test while coding, no mirrors, no common platform for different testing frameworks (which are all good things). Simplicity. You can only run unit and integration test currently.
+The aim of this project is to provide a minimal library to just run specs mocha-style, upon running a command.
 
 #### How to use
 
-1. `meteor add canotto90:latte`.
-2. `meteor add practicalmeteor:chai`. Latte needs an assertion library, and I've been using ChaiJS.
-2. Write a spec anywhere in a server directory.
-5. On the command line, run: `NODE_ENV=test RUN_TESTS=1 meteor --once`
+1. `npm install latte`. For how to install it as a devDependency check below.
+2. `npm install chai`. Latte needs an assertion library, and I've been using ChaiJS.
+3. Write a spec anywhere in a server directory.
+4. Somewhere in the code (before loading the test files):
+```javascript
+  const latte = require('latte')
+  Meteor.startup(() => latte.test())
+```
+5. On the command line, run: `NODE_ENV=test LATTE_MODE=run meteor --once`.
+
+For examples, check `sample-app/`.
+
+###### How to install as devDependencies
+
+Meteor filters devDependencies when building, for either production or development modes, so using `latte` (and eventually `chai`) as npm devDependencies requires a workaround, by running the `test` command instead of the `run` one:
+
+`NODE_ENV=test LATTE_MODE=run meteor test --once --driver-package meteor-base`
+
+`test` makes it mandatory to set a Meteor package as a the `--driver-package` param. Right now it seems you can use `meteor-base` (or other package declared at .meteor/packages). This is just a workaround, as setting a random package on this parameter doesn't seem to have other effect than preventing the `test` command from failing.
 
 #### Workflow
 
+###### Development (watch-mode)
+
+1. Run `NODE_ENV=test LATTE_MODE=watch meteor`.
+2. Write your specs. You'll likely want to use `ddescribe` to only run that test until you get it right.
+3. Watch the tests run. If you are using Meteor v1.5+ the code reload should be fast.
+4. Fix your code or tests until they are ok.
+
+###### CI (single-run-mode)
+
 1. Write your specs.
-2. Run `NODE_ENV=test RUN_TESTS=1 meteor --once`.
+2. Run `NODE_ENV=test LATTE_MODE=run meteor --once`.
 3. Watch test report.
-4. Watch the run finish returning the exit code (useful for CI).
+4. Check the exit code to mark the build state.
 
-#### Features
+#### Highlights
 
-- It connects to a `separate DB` from development's one (though on the same Mongo server). You can specify which DB to use by setting T.testingDbName. The default is `meteor_latte`.
-- It `cleans up the database` upon start, and after running each describe block.
+- It runs inside `Meteor's context` (any variable that is available when running the app is available on the tests).
+- It connects to a `separate DB` from development's one (though on the same Mongo server). You can specify which DB to use by setting T.testingDbName. The default is `meteor_latte`. And *switches back to develop's db* after running tests.
+- It `cleans up the database` upon start, and after running each describe block. So the DB state is clean for each test block.
 - Simple (yet nice?) `console based report`.
-- It runs inside `Meteor's context` (you can user global variables, such as Meteor collections).
-
-#### How to debug
-
-As latte doesn't use mirrors, it's just like debugging regular Meteor code. Run `NODE_ENV=test RUN_TESTS=true meteor debug`, and either use node inspector or node's CLI tool.
-
-Option A - Node Inspector:
-
-`NODE_ENV=test RUN_TESTS=1 meteor debug --once`. Then open chrome with the provided URL (usually `http://localhost:8080/debug?port=5858`).
-
-Option B - Node CLI Debugger:
-
-`NODE_ENV=test RUN_TESTS=1 NODE_OPTIONS=--debug-brk meteor --once`. Then on a different terminal run `node debug localhost:5858`. Ref: https://nodejs.org/api/debugger.html.
-
-##### Run tests on code change
-
-Use `NODE_ENV=test RUN_TESTS=cont meteor` to run tests automatically when files change. `cont` tells Latte not to end the Meteor process. Ideally, not using the `--once` argument should be enough to allow continuous testing, but doesn't seem to be a way to detect which arguments were used when running meteor (like we can in simple nodejs apps).
-
-Latte uses testing's DB when running tests, and *switches back to develop's db* after running tests.
 
 ##### Run selected tests
 
@@ -70,8 +73,8 @@ describe('a suite name', function() { ... })
 
 From the command line:
 
-  * run only a list a suites: `NODE_ENV=test RUN_TESTS=1 LATTE_SUITES='["a suite name"]' meteor --once`.
-  * run all but a list a suites: `NODE_ENV=test RUN_TESTS=1 LATTE_SUITES='["~a suite name"]' meteor --once`.
+  * run only a list a suites: `NODE_ENV=test LATTE_MODE=run LATTE_SUITES='["a suite name"]' meteor --once`.
+  * run all but a list a suites: `NODE_ENV=test LATTE_MODE=run LATTE_SUITES='["~a suite name"]' meteor --once`.
 
 #### Gotchas
 
@@ -80,3 +83,6 @@ From the command line:
 - Initially designed to work only on server side.
 - If the internet connection is flaky, it might take some seconds to end the Meteor process (this is due to some Meteor's internals).
 
+#### Original motivation
+
+https://slides.com/canotto90/deck

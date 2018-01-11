@@ -1,12 +1,41 @@
 {
+  "name": "latte",
+  "version": "1.0.0",
+  "description": "Testing framework to run mocha-esque specs on Meteor apps.",
+  "main": "index.js",
+  "scripts": {
+    "test": "cd sample-app && npm test",
+    "lint": "standard | snazzy && cd sample-app && standard | snazzy"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/taromero/latte.git"
+  },
+  "keywords": [
+    "meteor",
+    "testing"
+  ],
+  "author": "Tomas Romero",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/taromero/latte/issues"
+  },
+  "homepage": "https://github.com/taromero/latte#readme",
+  "dependencies": {
+    "chalk": "^2.3.0",
+    "figures": "^2.0.0"
+  },
+  "devDependencies": {
+    "standard": "^10.0.3",
+    "snazzy": "^7.0.0",
+    "prettier": "^1.9.2"
+  },
   "standard": {
     "global": [
-      "Mongo", "Meteor", "Package",
-      "SampleCollection", "DBCleanupCollection", "Subjects",
-      "describe", "ddescribe", "context", "ccontext", "it", "iit",
-      "beforeEach", "T", "afterEach",
-      "expect", "should", "_",
-      "figures", "Npm"
+      "Meteor"
+    ],
+    "ignore": [
+      "sample-app/"
     ]
   }
 }

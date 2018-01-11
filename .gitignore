@@ -3,4 +3,5 @@ TAGS
 *~
 settings.json
 .npm/
+node_modules/
 
