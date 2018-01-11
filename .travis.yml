@@ -11,6 +11,3 @@ script:
   - cd sample-app/
   - npm install
   - npm test
-  - cd ..
-  - bash check_for_new_version_number.bash
-  - sh publish.sh
